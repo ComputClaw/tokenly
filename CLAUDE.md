@@ -73,4 +73,4 @@ Tokenly2/
 
 ## Memory
 
-This project uses `MEMORY.md` (located at `~/.claude/projects/D--Source-Tokenly2/memory/MEMORY.md`) for persistent cross-conversation memories and learnings. Check it for context from previous sessions.
+This project uses `memory/MEMORY.md` (checked into the repo) for persistent cross-conversation memories and learnings. Check it for context from previous sessions. Update it when architecture decisions are made or lessons are learned.
