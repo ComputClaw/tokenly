@@ -1,0 +1,14 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "default": {
+      "appLocation": "web/admin",
+      "outputLocation": "dist",
+      "apiLocation": "api",
+      "apiPort": 7071,
+      "devserverPort": 4280,
+      "run": "npm run dev",
+      "apiDevserverUrl": "http://localhost:7071"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "tokenly-api",
+  "version": "1.0.0",
+  "description": "Tokenly API - Azure Functions backend for AI token usage tracking",
+  "main": "dist/src/functions/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "prestart": "npm run build",
+    "start": "func start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.6.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.12.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.7.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.0",
+    "@types/jest": "^29.5.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
