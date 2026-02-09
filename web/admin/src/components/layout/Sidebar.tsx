@@ -27,8 +27,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex flex-col transform transition-transform lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex items-center h-16 px-6 border-b border-gray-700">
-          <span className="text-xl font-bold tracking-wide">Tokenly</span>
+        <div className="flex items-center h-16 px-6 border-b border-gray-800">
+          <span className="text-xl font-bold tracking-wide bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">Tokenly</span>
         </div>
         <nav className="flex-1 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
@@ -38,13 +38,18 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               end={item.to === '/'}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center px-6 py-2.5 text-sm font-medium transition-colors ${isActive ? 'bg-gray-800 text-white border-r-2 border-blue-500' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`
+                `flex items-center px-6 py-2.5 text-sm font-medium transition-colors relative ${isActive ? 'bg-gray-800/70 text-white' : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`
               }
             >
-              <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-              </svg>
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r" />}
+                  <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                  </svg>
+                  {item.label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>

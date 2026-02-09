@@ -78,7 +78,10 @@ export default function AnalyticsPage() {
   const trendOptions = useMemo(() => ({
     responsive: true,
     plugins: { legend: { display: false as const } },
-    scales: { y: { beginAtZero: true, ticks: { callback: (v: string | number) => `$${v}` } } },
+    scales: {
+      x: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } },
+      y: { beginAtZero: true, ticks: { color: '#9ca3af', callback: (v: string | number) => `$${v}` }, grid: { color: '#1f2937' } },
+    },
   }), []);
 
   const serviceRankings = topServices?.rankings ?? [];
@@ -109,6 +112,10 @@ export default function AnalyticsPage() {
   const barOptions = useMemo(() => ({
     responsive: true,
     plugins: { legend: { display: false as const } },
+    scales: {
+      x: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } },
+      y: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } },
+    },
   }), []);
 
   if (loading) {
@@ -116,13 +123,13 @@ export default function AnalyticsPage() {
   }
 
   if (error) {
-    return <div className="bg-red-50 text-red-700 p-4 rounded-md">{error}</div>;
+    return <div className="bg-red-500/10 text-red-400 p-4 rounded-md">{error}</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+        <h1 className="text-2xl font-bold text-gray-100">Analytics</h1>
         <Select
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
@@ -141,7 +148,7 @@ export default function AnalyticsPage() {
       </div>
 
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Usage Trend</h2>
+        <h2 className="text-lg font-semibold text-gray-100 mb-4">Usage Trend</h2>
         {trendPoints.length > 0 ? (
           <Line data={trendChart} options={trendOptions} />
         ) : (
@@ -151,7 +158,7 @@ export default function AnalyticsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Services</h2>
+          <h2 className="text-lg font-semibold text-gray-100 mb-4">Top Services</h2>
           {serviceRankings.length > 0 ? (
             <Bar data={servicesChart} options={barOptions} />
           ) : (
@@ -159,7 +166,7 @@ export default function AnalyticsPage() {
           )}
         </Card>
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Models</h2>
+          <h2 className="text-lg font-semibold text-gray-100 mb-4">Top Models</h2>
           {modelRankings.length > 0 ? (
             <Bar data={modelsChart} options={barOptions} />
           ) : (
@@ -170,14 +177,14 @@ export default function AnalyticsPage() {
 
       <Card className="overflow-hidden">
         <div className="p-6 pb-3">
-          <h2 className="text-lg font-semibold text-gray-900">Cost Breakdown</h2>
+          <h2 className="text-lg font-semibold text-gray-100">Cost Breakdown</h2>
         </div>
         {!costs || costs.breakdowns.length === 0 ? (
           <div className="text-gray-500 text-sm text-center py-8">No data available</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-y border-gray-200">
+              <thead className="bg-gray-800/50 border-y border-gray-800">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Dimensions</th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500">Cost</th>
@@ -186,11 +193,11 @@ export default function AnalyticsPage() {
                   <th className="px-4 py-3 text-right font-medium text-gray-500">Requests</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-800">
                 {costs.breakdowns.map((entry, i) => (
                   <tr key={i}>
-                    <td className="px-4 py-3 text-gray-900">{Object.values(entry.dimensions).join(' / ')}</td>
-                    <td className="px-4 py-3 text-right text-gray-900">${entry.cost.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-gray-100">{Object.values(entry.dimensions).join(' / ')}</td>
+                    <td className="px-4 py-3 text-right text-gray-100">${entry.cost.toFixed(2)}</td>
                     <td className="px-4 py-3 text-right text-gray-500">{entry.percentage.toFixed(1)}%</td>
                     <td className="px-4 py-3 text-right text-gray-500">{entry.token_count.toLocaleString()}</td>
                     <td className="px-4 py-3 text-right text-gray-500">{entry.request_count.toLocaleString()}</td>

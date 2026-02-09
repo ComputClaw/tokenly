@@ -22,7 +22,7 @@ export default function Modal({ onClose, labelledBy, maxWidth = 'md', className 
       aria-label="Close modal"
     >
       <div
-        className={`bg-white rounded-lg shadow-xl ${maxWidthClasses[maxWidth]} w-full ${className}`}
+        className={`bg-gray-900 border border-gray-700 rounded-lg shadow-xl ${maxWidthClasses[maxWidth]} w-full ${className}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

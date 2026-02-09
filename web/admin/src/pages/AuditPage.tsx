@@ -29,9 +29,9 @@ export default function AuditPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Audit Trail</h1>
+      <h1 className="text-2xl font-bold text-gray-100">Audit Trail</h1>
 
-      {error && <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">{error}</div>}
+      {error && <div className="bg-red-500/10 text-red-400 p-3 rounded-md text-sm">{error}</div>}
 
       <Card className="overflow-hidden">
         {loading ? (
@@ -43,7 +43,7 @@ export default function AuditPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-800/50 border-b border-gray-800">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Timestamp</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">User</th>
@@ -51,14 +51,14 @@ export default function AuditPage() {
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Resource</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-800">
                 {entries.map((entry) => (
                   <tr key={entry.id}>
                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                       {new Date(entry.timestamp).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">{entry.user}</td>
-                    <td className="px-4 py-3 text-gray-900">{entry.action}</td>
+                    <td className="px-4 py-3 font-medium text-gray-100">{entry.user}</td>
+                    <td className="px-4 py-3 text-gray-100">{entry.action}</td>
                     <td className="px-4 py-3 text-gray-500">
                       {entry.resource_type}
                       {entry.resource_id ? `: ${entry.resource_id}` : ''}
@@ -71,7 +71,7 @@ export default function AuditPage() {
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-800">
             <span className="text-sm text-gray-500">
               Page {page} of {totalPages} ({total} entries)
             </span>

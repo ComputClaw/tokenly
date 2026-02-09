@@ -8,10 +8,10 @@ interface MetricCardProps {
 }
 
 const colorMap = {
-  blue: 'bg-blue-50 text-blue-700 border-blue-200',
-  green: 'bg-green-50 text-green-700 border-green-200',
-  yellow: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-  red: 'bg-red-50 text-red-700 border-red-200',
+  blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  green: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  yellow: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  red: 'bg-red-500/10 text-red-400 border-red-500/20',
 } as const;
 
 function MetricCard({ title, value, subtitle, color = 'blue' }: MetricCardProps) {

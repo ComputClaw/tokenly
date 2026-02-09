@@ -9,10 +9,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAuth();
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6">
+    <header className="h-16 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 flex items-center justify-between px-4 lg:px-6">
       <button
         onClick={onMenuClick}
-        className="lg:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100"
+        className="lg:hidden p-2 rounded-md text-gray-400 hover:bg-gray-800"
         aria-label="Open menu"
       >
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -23,7 +23,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
       <div className="flex-1" />
 
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">{user?.username}</span>
+        <span className="text-sm text-gray-400">{user?.username}</span>
         <Button variant="ghost" size="sm" onClick={logout}>
           Logout
         </Button>

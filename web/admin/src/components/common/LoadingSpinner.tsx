@@ -13,7 +13,7 @@ const sizeMap = {
 
 function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
   return (
-    <div className={`animate-spin rounded-full border-b-2 border-blue-600 ${sizeMap[size]} ${className}`} />
+    <div className={`animate-spin rounded-full border-b-2 border-blue-400 ${sizeMap[size]} ${className}`} />
   );
 }
 

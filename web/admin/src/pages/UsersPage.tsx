@@ -46,13 +46,13 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Users</h1>
+        <h1 className="text-2xl font-bold text-gray-100">Users</h1>
         <Button onClick={() => setShowAddForm(true)}>
           Add User
         </Button>
       </div>
 
-      {error && <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">{error}</div>}
+      {error && <div className="bg-red-500/10 text-red-400 p-3 rounded-md text-sm">{error}</div>}
 
       <Card className="overflow-hidden">
         {loading ? (
@@ -64,7 +64,7 @@ export default function UsersPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-800/50 border-b border-gray-800">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Username</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Role</th>
@@ -73,23 +73,23 @@ export default function UsersPage() {
                   <th className="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-800">
                 {users.map((user) => (
                   <tr key={user.user_id}>
-                    <td className="px-4 py-3 font-medium text-gray-900">{user.username}</td>
+                    <td className="px-4 py-3 font-medium text-gray-100">{user.username}</td>
                     <td className="px-4 py-3 text-gray-500">{user.role}</td>
                     <td className="px-4 py-3 text-gray-500">{user.last_login ? formatRelative(user.last_login) : 'Never'}</td>
                     <td className="px-4 py-3"><StatusBadge status={user.enabled ? 'active' : 'disabled'} /></td>
                     <td className="px-4 py-3 text-right space-x-2">
                       <button
                         onClick={() => handleToggleStatus(user)}
-                        className="text-sm text-gray-600 hover:text-gray-900"
+                        className="text-sm text-gray-400 hover:text-gray-200"
                       >
                         {user.enabled ? 'Disable' : 'Enable'}
                       </button>
                       <button
                         onClick={() => setChangePasswordUser(user.username)}
-                        className="text-sm text-gray-600 hover:text-gray-900"
+                        className="text-sm text-gray-400 hover:text-gray-200"
                       >
                         Password
                       </button>
@@ -155,11 +155,11 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
   return (
     <Modal onClose={onClose} labelledBy="add-user-title">
         <div className="p-6">
-          <h2 id="add-user-title" className="text-lg font-bold text-gray-900 mb-4">Create Admin User</h2>
-          {error && <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">{error}</div>}
+          <h2 id="add-user-title" className="text-lg font-bold text-gray-100 mb-4">Create Admin User</h2>
+          {error && <div className="mb-4 p-3 rounded-md bg-red-500/10 text-red-400 text-sm">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="new-username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label htmlFor="new-username" className="block text-sm font-medium text-gray-300 mb-1">Username</label>
               <Input
                 id="new-username"
                 type="text"
@@ -170,7 +170,7 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
               />
             </div>
             <div>
-              <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label htmlFor="new-password" className="block text-sm font-medium text-gray-300 mb-1">Password</label>
               <Input
                 id="new-password"
                 type="password"
@@ -182,7 +182,7 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
               />
             </div>
             <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-300 mb-1">Confirm Password</label>
               <Input
                 id="confirm-password"
                 type="password"
@@ -193,7 +193,7 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
               />
             </div>
             <div>
-              <label htmlFor="user-role" className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <label htmlFor="user-role" className="block text-sm font-medium text-gray-300 mb-1">Role</label>
               <Select
                 id="user-role"
                 value={role}
@@ -261,16 +261,16 @@ function ChangePasswordModal({ username, onClose }: { username: string; onClose:
   return (
     <Modal onClose={onClose} labelledBy="change-password-title">
         <div className="p-6">
-          <h2 id="change-password-title" className="text-lg font-bold text-gray-900 mb-4">Change Password: {username}</h2>
-          {error && <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">{error}</div>}
-          {success && <div className="mb-4 p-3 rounded-md bg-green-50 text-green-700 text-sm">Password changed successfully</div>}
+          <h2 id="change-password-title" className="text-lg font-bold text-gray-100 mb-4">Change Password: {username}</h2>
+          {error && <div className="mb-4 p-3 rounded-md bg-red-500/10 text-red-400 text-sm">{error}</div>}
+          {success && <div className="mb-4 p-3 rounded-md bg-emerald-500/10 text-emerald-400 text-sm">Password changed successfully</div>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="new-pw" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <label htmlFor="new-pw" className="block text-sm font-medium text-gray-300 mb-1">New Password</label>
               <Input id="new-pw" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={12} className="w-full" />
             </div>
             <div>
-              <label htmlFor="confirm-new-pw" className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+              <label htmlFor="confirm-new-pw" className="block text-sm font-medium text-gray-300 mb-1">Confirm New Password</label>
               <Input id="confirm-new-pw" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="w-full" />
             </div>
             <div className="flex gap-3 pt-2">

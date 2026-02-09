@@ -57,7 +57,8 @@ export default function DashboardPage() {
       legend: { display: false as const },
     },
     scales: {
-      y: { beginAtZero: true, ticks: { callback: (v: string | number) => `$${v}` } },
+      x: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } },
+      y: { beginAtZero: true, ticks: { color: '#9ca3af', callback: (v: string | number) => `$${v}` }, grid: { color: '#1f2937' } },
     },
   }), []);
 
@@ -66,12 +67,12 @@ export default function DashboardPage() {
   }
 
   if (error) {
-    return <div className="bg-red-50 text-red-700 p-4 rounded-md">{error}</div>;
+    return <div className="bg-red-500/10 text-red-400 p-4 rounded-md">{error}</div>;
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-100">Dashboard</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard title="Total Clients" value={status?.clients.total ?? 0} color="blue" />
@@ -86,7 +87,7 @@ export default function DashboardPage() {
       </div>
 
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Usage Trend</h2>
+        <h2 className="text-lg font-semibold text-gray-100 mb-4">Usage Trend</h2>
         {dataPoints.length > 0 ? (
           <Line data={chartData} options={chartOptions} />
         ) : (
@@ -96,41 +97,41 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Server Info</h2>
+          <h2 className="text-lg font-semibold text-gray-100 mb-3">Server Info</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-gray-500">Version</dt>
-              <dd className="text-gray-900 font-medium">{status?.server.version}</dd>
+              <dd className="text-gray-100 font-medium">{status?.server.version}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-500">Uptime</dt>
-              <dd className="text-gray-900 font-medium">{formatUptime(status?.server.uptime_seconds ?? 0)}</dd>
+              <dd className="text-gray-100 font-medium">{formatUptime(status?.server.uptime_seconds ?? 0)}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-500">Memory</dt>
-              <dd className="text-gray-900 font-medium">{status?.server.memory_usage_mb} MB</dd>
+              <dd className="text-gray-100 font-medium">{status?.server.memory_usage_mb} MB</dd>
             </div>
           </dl>
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Ingestion Today</h2>
+          <h2 className="text-lg font-semibold text-gray-100 mb-3">Ingestion Today</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-gray-500">Files</dt>
-              <dd className="text-gray-900 font-medium">{status?.ingestion.files_today}</dd>
+              <dd className="text-gray-100 font-medium">{status?.ingestion.files_today}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-500">Records</dt>
-              <dd className="text-gray-900 font-medium">{status?.ingestion.records_today?.toLocaleString()}</dd>
+              <dd className="text-gray-100 font-medium">{status?.ingestion.records_today?.toLocaleString()}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-500">Avg Processing</dt>
-              <dd className="text-gray-900 font-medium">{status?.ingestion.average_processing_time_ms} ms</dd>
+              <dd className="text-gray-100 font-medium">{status?.ingestion.average_processing_time_ms} ms</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-500">Errors</dt>
-              <dd className="text-gray-900 font-medium">{status?.ingestion.errors_today}</dd>
+              <dd className="text-gray-100 font-medium">{status?.ingestion.errors_today}</dd>
             </div>
           </dl>
         </Card>

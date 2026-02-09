@@ -80,15 +80,15 @@ export default function ConfigPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Configuration</h1>
+      <h1 className="text-2xl font-bold text-gray-100">Configuration</h1>
 
       {message && (
-        <div className={`p-3 rounded-md text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+        <div className={`p-3 rounded-md text-sm ${message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
           {message.text}
         </div>
       )}
 
-      <form onSubmit={handleSave} className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">
+      <form onSubmit={handleSave} className="bg-gray-900 rounded-lg border border-gray-800 divide-y divide-gray-800">
         <Section title="Scanning Behavior">
           <Toggle label="Scan Enabled" checked={config.scan_enabled} onChange={(v) => setConfig((c) => ({ ...c, scan_enabled: v }))} />
           <NumberField label="Scan Interval (minutes)" value={config.scan_interval_minutes} onChange={(v) => setConfig((c) => ({ ...c, scan_interval_minutes: v }))} />
@@ -127,7 +127,7 @@ export default function ConfigPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">{title}</h2>
+      <h2 className="text-lg font-semibold text-gray-100 mb-4">{title}</h2>
       <div className="space-y-4">{children}</div>
     </div>
   );
@@ -136,7 +136,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
     <div className="flex items-center justify-between">
-      <label className="text-sm text-gray-700">{label}</label>
+      <label className="text-sm text-gray-300">{label}</label>
       <Input
         type="number"
         value={value}
@@ -151,14 +151,14 @@ function NumberField({ label, value, onChange }: { label: string; value: number;
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <div className="flex items-center justify-between">
-      <label className="text-sm text-gray-700">{label}</label>
+      <label className="text-sm text-gray-300">{label}</label>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         aria-label={label}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${checked ? 'bg-blue-600' : 'bg-gray-300'}`}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${checked ? 'bg-blue-600' : 'bg-gray-700'}`}
       >
         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${checked ? 'translate-x-6' : 'translate-x-1'}`} />
       </button>
@@ -169,7 +169,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
 function SelectField({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
   return (
     <div className="flex items-center justify-between">
-      <label className="text-sm text-gray-700">{label}</label>
+      <label className="text-sm text-gray-300">{label}</label>
       <Select
         value={value}
         onChange={(e) => onChange(e.target.value)}

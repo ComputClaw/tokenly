@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center h-screen bg-gray-950">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -38,16 +38,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-gray-950">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-2xl font-bold text-gray-900 text-center mb-6">Tokenly Admin</h1>
+        <div className="bg-gray-900 rounded-lg border border-gray-800 p-8">
+          <h1 className="text-2xl font-bold text-gray-100 text-center mb-6">Tokenly Admin</h1>
           {error && (
-            <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">{error}</div>
+            <div className="mb-4 p-3 rounded-md bg-red-500/10 text-red-400 text-sm">{error}</div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
                 Username
               </label>
               <Input
@@ -60,7 +60,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
                 Password
               </label>
               <Input

@@ -76,17 +76,17 @@ export default function ClientsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
+      <h1 className="text-2xl font-bold text-gray-100">Clients</h1>
 
-      {error && <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">{error}</div>}
+      {error && <div className="bg-red-500/10 text-red-400 p-3 rounded-md text-sm">{error}</div>}
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setFilter(tab.key)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filter === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filter === tab.key ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
             >
               {tab.label}
               {tab.count !== undefined && (
@@ -114,7 +114,7 @@ export default function ClientsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-800/50 border-b border-gray-800">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Hostname</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
@@ -123,14 +123,14 @@ export default function ClientsPage() {
                   <th className="px-4 py-3 text-right font-medium text-gray-500">Uploads</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-800">
                 {filtered.map((client) => (
                   <tr
                     key={client.client_id}
                     onClick={() => setSelectedClient(client)}
-                    className="hover:bg-gray-50 cursor-pointer"
+                    className="hover:bg-gray-800/50 cursor-pointer"
                   >
-                    <td className="px-4 py-3 font-medium text-gray-900">{client.hostname}</td>
+                    <td className="px-4 py-3 font-medium text-gray-100">{client.hostname}</td>
                     <td className="px-4 py-3"><StatusBadge status={client.status} /></td>
                     <td className="px-4 py-3 text-gray-500">{formatRelative(client.last_seen)}</td>
                     <td className="px-4 py-3"><StatusBadge status={client.worker_status} /></td>
@@ -176,8 +176,8 @@ function ClientDetailModal({
     <Modal onClose={onClose} labelledBy={modalTitleId} maxWidth="lg" className="max-h-[90vh] overflow-y-auto">
         <div className="p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 id={modalTitleId} className="text-lg font-bold text-gray-900">{client.hostname}</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600" aria-label="Close">
+            <h2 id={modalTitleId} className="text-lg font-bold text-gray-100">{client.hostname}</h2>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-300" aria-label="Close">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -198,15 +198,15 @@ function ClientDetailModal({
             <dl className="space-y-1 text-sm">
               <div className="flex justify-between">
                 <dt className="text-gray-500">OS</dt>
-                <dd className="text-gray-900">{client.system_info.platform}</dd>
+                <dd className="text-gray-100">{client.system_info.platform}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Launcher</dt>
-                <dd className="text-gray-900">v{client.launcher_version}</dd>
+                <dd className="text-gray-100">v{client.launcher_version}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Worker</dt>
-                <dd className="text-gray-900">v{client.worker_version}</dd>
+                <dd className="text-gray-100">v{client.worker_version}</dd>
               </div>
             </dl>
           </div>
@@ -216,15 +216,15 @@ function ClientDetailModal({
             <dl className="space-y-1 text-sm">
               <div className="flex justify-between">
                 <dt className="text-gray-500">Total Uploads</dt>
-                <dd className="text-gray-900">{client.stats.total_uploads}</dd>
+                <dd className="text-gray-100">{client.stats.total_uploads}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Total Records</dt>
-                <dd className="text-gray-900">{client.stats.total_records.toLocaleString()}</dd>
+                <dd className="text-gray-100">{client.stats.total_records.toLocaleString()}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Last Upload</dt>
-                <dd className="text-gray-900">{client.stats.last_upload ? formatRelative(client.stats.last_upload) : 'Never'}</dd>
+                <dd className="text-gray-100">{client.stats.last_upload ? formatRelative(client.stats.last_upload) : 'Never'}</dd>
               </div>
             </dl>
           </div>
@@ -245,7 +245,7 @@ function ClientDetailModal({
             </div>
           )}
 
-          <div className="flex gap-2 pt-2 border-t border-gray-200">
+          <div className="flex gap-2 pt-2 border-t border-gray-800">
             {client.status === 'pending' && (
               <>
                 <Button variant="success" onClick={() => onApprove(client.client_id, notes || undefined)}>

@@ -5,20 +5,20 @@ interface StatusBadgeProps {
 }
 
 const statusStyles: Record<string, string> = {
-  approved: 'bg-green-100 text-green-800',
-  active: 'bg-green-100 text-green-800',
-  running: 'bg-green-100 text-green-800',
-  pending: 'bg-yellow-100 text-yellow-800',
-  rejected: 'bg-red-100 text-red-800',
-  stopped: 'bg-gray-100 text-gray-800',
-  offline: 'bg-gray-100 text-gray-800',
-  disabled: 'bg-red-100 text-red-800',
-  healthy: 'bg-green-100 text-green-800',
+  approved: 'bg-emerald-500/15 text-emerald-400',
+  active: 'bg-emerald-500/15 text-emerald-400',
+  running: 'bg-emerald-500/15 text-emerald-400',
+  healthy: 'bg-emerald-500/15 text-emerald-400',
+  pending: 'bg-amber-500/15 text-amber-400',
+  rejected: 'bg-red-500/15 text-red-400',
+  disabled: 'bg-red-500/15 text-red-400',
+  stopped: 'bg-gray-500/15 text-gray-400',
+  offline: 'bg-gray-500/15 text-gray-400',
 };
 
 function StatusBadge({ status }: StatusBadgeProps) {
   const normalizedStatus = status.toLowerCase();
-  const style = statusStyles[normalizedStatus] ?? 'bg-gray-100 text-gray-800';
+  const style = statusStyles[normalizedStatus] ?? 'bg-gray-500/15 text-gray-400';
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${style}`}>
       {status}
