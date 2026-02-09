@@ -459,16 +459,16 @@ The API client service wraps all server communication:
 
 | API Operation | Method | Endpoint | Description |
 |---------------|--------|----------|-------------|
-| Get clients | POST | `/admin/clients` | List clients with filter criteria |
-| Approve client | PUT | `/admin/clients/{id}/approve` | Approve a pending client (with optional notes) |
-| Reject client | PUT | `/admin/clients/{id}/reject` | Reject a pending client |
-| Get system status | GET | `/admin/status` | Current system health and metrics |
-| Get config | GET | `/admin/config/{key}` | Read a configuration value |
-| Set config | PUT | `/admin/config/{key}` | Update a configuration value |
-| Get users | GET | `/admin/users` | List all users |
-| Create user | POST | `/admin/users` | Create a new account |
-| Update user status | PUT | `/admin/users/{username}/{enable\|disable}` | Enable or disable a user |
-| Change password | PUT | `/admin/users/{username}/password` | Change user password (requires current password) |
+| Get clients | POST | `/manage/clients` | List clients with filter criteria |
+| Approve client | PUT | `/manage/clients/{id}/approve` | Approve a pending client (with optional notes) |
+| Reject client | PUT | `/manage/clients/{id}/reject` | Reject a pending client |
+| Get system status | GET | `/manage/status` | Current system health and metrics |
+| Get config | GET | `/manage/config/{key}` | Read a configuration value |
+| Set config | PUT | `/manage/config/{key}` | Update a configuration value |
+| Get users | GET | `/manage/users` | List all users |
+| Create user | POST | `/manage/users` | Create a new account |
+| Update user status | PUT | `/manage/users/{username}/{enable\|disable}` | Enable or disable a user |
+| Change password | PUT | `/manage/users/{username}/password` | Change user password (requires current password) |
 
 **Error handling behavior:**
 - 401 responses trigger automatic token refresh and retry

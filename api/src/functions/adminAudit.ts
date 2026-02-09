@@ -55,9 +55,9 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
   }
 }
 
-app.http('adminAudit', {
+app.http('mgmtAudit', {
   methods: ['GET', 'OPTIONS'],
-  route: 'admin/audit',
+  route: 'manage/audit',
   authLevel: 'anonymous',
   handler,
 });

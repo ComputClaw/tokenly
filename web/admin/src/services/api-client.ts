@@ -101,40 +101,40 @@ export async function refresh(): Promise<RefreshResponse> {
 
 // Clients
 export async function getClients(status?: string): Promise<ClientListResponse> {
-  const res = await api.get<ClientListResponse>('/admin/clients', {
+  const res = await api.get<ClientListResponse>('/manage/clients', {
     params: status ? { status } : undefined,
   });
   return ClientListResponseSchema.parse(res.data);
 }
 
 export async function approveClient(clientId: string, notes?: string): Promise<void> {
-  await api.put(`/admin/clients/${clientId}/approve`, { approved: true, notes });
+  await api.put(`/manage/clients/${clientId}/approve`, { approved: true, notes });
 }
 
 export async function rejectClient(clientId: string): Promise<void> {
-  await api.put(`/admin/clients/${clientId}/reject`, { approved: false });
+  await api.put(`/manage/clients/${clientId}/reject`, { approved: false });
 }
 
 export async function deleteClient(clientId: string): Promise<void> {
-  await api.delete(`/admin/clients/${clientId}`);
+  await api.delete(`/manage/clients/${clientId}`);
 }
 
 // Users
 export async function getUsers(): Promise<UserListResponse> {
-  const res = await api.get<UserListResponse>('/admin/users');
+  const res = await api.get<UserListResponse>('/manage/users');
   return res.data;
 }
 
 export async function createUser(username: string, password: string, role: string): Promise<void> {
-  await api.post('/admin/users', { username, password, role });
+  await api.post('/manage/users', { username, password, role });
 }
 
 export async function disableUser(username: string): Promise<void> {
-  await api.put(`/admin/users/${username}/disable`);
+  await api.put(`/manage/users/${username}/disable`);
 }
 
 export async function enableUser(username: string): Promise<void> {
-  await api.put(`/admin/users/${username}/enable`);
+  await api.put(`/manage/users/${username}/enable`);
 }
 
 export async function changePassword(
@@ -142,7 +142,7 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
-  await api.put(`/admin/users/${username}/password`, {
+  await api.put(`/manage/users/${username}/password`, {
     current_password: currentPassword,
     new_password: newPassword,
   });
@@ -150,18 +150,18 @@ export async function changePassword(
 
 // System Status
 export async function getStatus(): Promise<SystemStatus> {
-  const res = await api.get<SystemStatus>('/admin/status');
+  const res = await api.get<SystemStatus>('/manage/status');
   return SystemStatusSchema.parse(res.data);
 }
 
 // Config
 export async function getConfig(key: string): Promise<ConfigEntry> {
-  const res = await api.get<ConfigEntry>(`/admin/config/${key}`);
+  const res = await api.get<ConfigEntry>(`/manage/config/${key}`);
   return res.data;
 }
 
 export async function setConfig(key: string, value: unknown): Promise<void> {
-  await api.put(`/admin/config/${key}`, { value });
+  await api.put(`/manage/config/${key}`, { value });
 }
 
 // Audit
@@ -171,7 +171,7 @@ export async function getAuditLog(params?: {
   user?: string;
   action?: string;
 }): Promise<AuditLogResponse> {
-  const res = await api.get<AuditLogResponse>('/admin/audit', { params });
+  const res = await api.get<AuditLogResponse>('/manage/audit', { params });
   return res.data;
 }
 
@@ -183,7 +183,7 @@ export async function getAnalyticsSummary(period?: string): Promise<AnalyticsSum
     params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
     params.end_time = new Date().toISOString();
   }
-  const res = await api.get<AnalyticsSummary>('/admin/analytics/summary', { params });
+  const res = await api.get<AnalyticsSummary>('/manage/analytics/summary', { params });
   return res.data;
 }
 
@@ -194,7 +194,7 @@ export async function getTrend(period?: string): Promise<TrendData> {
     params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
     params.end_time = new Date().toISOString();
   }
-  const res = await api.get<TrendData>('/admin/analytics/trend', { params });
+  const res = await api.get<TrendData>('/manage/analytics/trend', { params });
   return res.data;
 }
 
@@ -208,7 +208,7 @@ export async function getTopUsage(
     params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
     params.end_time = new Date().toISOString();
   }
-  const res = await api.get<TopUsageResult>('/admin/analytics/top', { params });
+  const res = await api.get<TopUsageResult>('/manage/analytics/top', { params });
   return res.data;
 }
 
@@ -219,6 +219,6 @@ export async function getCostBreakdown(period?: string): Promise<CostBreakdown> 
     params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
     params.end_time = new Date().toISOString();
   }
-  const res = await api.get<CostBreakdown>('/admin/analytics/cost-breakdown', { params });
+  const res = await api.get<CostBreakdown>('/manage/analytics/cost-breakdown', { params });
   return res.data;
 }
