@@ -1,3 +1,7 @@
+## Memory
+
+This project uses `MEMORY.md` (checked into the repo) for persistent cross-conversation memories and learnings. Check it for context from previous sessions. Update it when architecture decisions are made or lessons are learned.
+
 # Tokenly - Project Guide
 
 ## Overview
@@ -70,7 +74,3 @@ Tokenly2/
 - Storage plugins wired via dependency injection; in-memory for development, swappable to persistent backends later
 - JWT authentication with httpOnly refresh cookies for admin interface
 - All client configuration delivered via server heartbeat responses (zero-config clients)
-
-## Memory
-
-This project uses `MEMORY.md` (checked into the repo) for persistent cross-conversation memories and learnings. Check it for context from previous sessions. Update it when architecture decisions are made or lessons are learned.
