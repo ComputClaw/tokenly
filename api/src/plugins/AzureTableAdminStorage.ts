@@ -7,7 +7,7 @@ import {
 } from '@azure/data-tables';
 import { IAdminStoragePlugin } from '../interfaces/IAdminStoragePlugin.js';
 import {
-  AdminUser, AdminUserCreate, AdminUserUpdate,
+  User, UserCreate, UserUpdate,
   Permission, DEFAULT_ROLE_PERMISSIONS,
   ClientInfo, ClientRegistration, ClientFilter, ClientList,
   ClientConfig, ClientConfigOverride, ClientStatus,
@@ -58,19 +58,19 @@ const DEFAULT_SYSTEM_CONFIG: readonly DefaultSystemConfigEntry[] = [
   { key: 'audit.retention_days', value: 90, type: 'int' },
 ];
 
-// ── AdminUser entity helpers ────────────────────────────────────────────
+// ── User entity helpers ─────────────────────────────────────────────────
 
 const USER_NULLABLE: readonly string[] = [
   'last_login', 'disabled_at', 'locked_until',
 ];
 const USER_JSON: readonly string[] = ['permissions'];
 
-function adminUserToEntity(pk: string, rk: string, user: AdminUser): TableEntity {
+function userToEntity(pk: string, rk: string, user: User): TableEntity {
   return toEntity(pk, rk, user as unknown as Record<string, unknown>);
 }
 
-function entityToAdminUser(entity: Record<string, unknown>): AdminUser {
-  return fromEntity<AdminUser>(entity, USER_NULLABLE, USER_JSON);
+function entityToUser(entity: Record<string, unknown>): User {
+  return fromEntity<User>(entity, USER_NULLABLE, USER_JSON);
 }
 
 // ── ClientInfo entity helpers ───────────────────────────────────────────
@@ -221,9 +221,9 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     }
 
     // Seed admin user
-    const existingAdmin = await this.getAdminUser('admin');
+    const existingAdmin = await this.getUser('admin');
     if (!existingAdmin) {
-      const user = await this.createAdminUser({
+      const user = await this.createUser({
         username: 'admin',
         password: 'changeme',
         role: 'super_admin',
@@ -241,9 +241,9 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     }
   }
 
-  // ── Admin Users ───────────────────────────────────────────────────────
+  // ── Users ────────────────────────────────────────────────────────────
 
-  async createAdminUser(input: AdminUserCreate): Promise<AdminUser> {
+  async createUser(input: UserCreate): Promise<User> {
     // Check for existing
     const existing = await this.getEntity(this.usersTable, 'users', `name~${input.username}`);
     if (existing) {
@@ -258,7 +258,7 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     const passwordHash = await bcrypt.hash(input.password, 12);
     const userId = toUserId(uuidv4());
 
-    const user: AdminUser = {
+    const user: User = {
       user_id: userId,
       username: input.username,
       password_hash: passwordHash,
@@ -276,43 +276,43 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
       must_change_password: false,
     };
 
-    const entity = adminUserToEntity('users', `name~${user.username}`, user);
+    const entity = userToEntity('users', `name~${user.username}`, user);
     await this.usersTable.createEntity(entity);
 
     return deepClone(user);
   }
 
-  async getAdminUser(username: string): Promise<AdminUser | null> {
+  async getUser(username: string): Promise<User | null> {
     const entity = await this.getEntity(this.usersTable, 'users', `name~${username}`);
     if (!entity) return null;
-    return entityToAdminUser(entity);
+    return entityToUser(entity);
   }
 
-  async getAdminUserById(userId: string): Promise<AdminUser | null> {
+  async getUserById(userId: string): Promise<User | null> {
     // Scan all name~ rows and find by user_id (acceptable at small user counts)
     for await (const entity of this.usersTable.listEntities<Record<string, unknown>>({
       queryOptions: { filter: `PartitionKey eq 'users' and RowKey ge 'name~' and RowKey lt 'namf'` },
     })) {
       if (entity['user_id'] === userId) {
-        return entityToAdminUser(entity);
+        return entityToUser(entity);
       }
     }
     return null;
   }
 
-  async listAdminUsers(): Promise<AdminUser[]> {
-    const users: AdminUser[] = [];
+  async listUsers(): Promise<User[]> {
+    const users: User[] = [];
     for await (const entity of this.usersTable.listEntities<Record<string, unknown>>({
       queryOptions: { filter: `PartitionKey eq 'users' and RowKey ge 'name~' and RowKey lt 'namf'` },
     })) {
-      users.push(entityToAdminUser(entity));
+      users.push(entityToUser(entity));
     }
     return users;
   }
 
-  async updateAdminUser(username: string, updates: AdminUserUpdate): Promise<void> {
-    const user = await this.getAdminUser(username);
-    if (!user) throw new NotFoundError('AdminUser', username);
+  async updateUser(username: string, updates: UserUpdate): Promise<void> {
+    const user = await this.getUser(username);
+    if (!user) throw new NotFoundError('User', username);
 
     if (updates.role !== undefined) {
       user.role = updates.role;
@@ -334,18 +334,18 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     await this.writeUser(user);
   }
 
-  async setAdminUserPassword(username: string, passwordHash: string, _updatedBy: string): Promise<void> {
-    const user = await this.getAdminUser(username);
-    if (!user) throw new NotFoundError('AdminUser', username);
+  async setUserPassword(username: string, passwordHash: string, _updatedBy: string): Promise<void> {
+    const user = await this.getUser(username);
+    if (!user) throw new NotFoundError('User', username);
 
     user.password_hash = passwordHash;
     user.updated_at = new Date().toISOString();
     await this.writeUser(user);
   }
 
-  async disableAdminUser(username: string, disabledBy: string): Promise<void> {
-    const user = await this.getAdminUser(username);
-    if (!user) throw new NotFoundError('AdminUser', username);
+  async disableUser(username: string, disabledBy: string): Promise<void> {
+    const user = await this.getUser(username);
+    if (!user) throw new NotFoundError('User', username);
 
     const now = new Date().toISOString();
     user.enabled = false;
@@ -355,9 +355,9 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     await this.writeUser(user);
   }
 
-  async enableAdminUser(username: string, _enabledBy: string): Promise<void> {
-    const user = await this.getAdminUser(username);
-    if (!user) throw new NotFoundError('AdminUser', username);
+  async enableUser(username: string, _enabledBy: string): Promise<void> {
+    const user = await this.getUser(username);
+    if (!user) throw new NotFoundError('User', username);
 
     user.enabled = true;
     user.disabled_at = null;
@@ -366,15 +366,15 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     await this.writeUser(user);
   }
 
-  async deleteAdminUser(username: string, _deletedBy: string): Promise<void> {
-    const user = await this.getAdminUser(username);
-    if (!user) throw new NotFoundError('AdminUser', username);
+  async deleteUser(username: string, _deletedBy: string): Promise<void> {
+    const user = await this.getUser(username);
+    if (!user) throw new NotFoundError('User', username);
 
     await this.usersTable.deleteEntity('users', `name~${user.username}`);
   }
 
-  async validatePassword(username: string, password: string): Promise<AdminUser | null> {
-    const user = await this.getAdminUser(username);
+  async validatePassword(username: string, password: string): Promise<User | null> {
+    const user = await this.getUser(username);
     if (!user || !user.enabled) return null;
 
     if (user.locked_until) {
@@ -400,8 +400,8 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     return deepClone(user);
   }
 
-  private async writeUser(user: AdminUser): Promise<void> {
-    const entity = adminUserToEntity('users', `name~${user.username}`, user);
+  private async writeUser(user: User): Promise<void> {
+    const entity = userToEntity('users', `name~${user.username}`, user);
     await this.usersTable.upsertEntity(entity, 'Replace');
   }
 

@@ -17,7 +17,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 ### Primary Functions
 1. **Client Management** - Registration, approval workflows, status tracking
 2. **System Configuration** - Default settings, feature flags, overrides
-3. **Administrative Users** - Admin accounts, API keys, permissions (future)
+3. **Users** - User accounts, API keys, permissions (future)
 4. **Audit Trail** - Track who did what when for accountability
 5. **Operational Metadata** - Client statistics, health metrics
 
@@ -39,17 +39,17 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 | `Initialize` | config (key-value map) | — | Set up storage backend, create schema if needed | Invalid config |
 | `HealthCheck` | — | — | Verify storage is accessible and responsive | Storage unavailable |
 | `Close` | — | — | Release resources, close connections | — |
-| **Admin Users** | | | | |
-| `CreateAdminUser` | user details (username, password, role) | AdminUser | Hash password, assign UUID, set defaults. Role determines initial permissions. | User already exists |
-| `GetAdminUser` | username | AdminUser or null | Look up user by username | — |
-| `GetAdminUserById` | user_id | AdminUser or null | Look up user by ID | — |
-| `ListAdminUsers` | — | AdminUser[] | Return all admin users | — |
-| `UpdateAdminUser` | username, updates (role, permissions, etc.) | — | Apply partial updates to user record | User not found |
-| `SetAdminUserPassword` | username, password_hash, updated_by | — | Replace password hash | User not found |
-| `DisableAdminUser` | username, disabled_by | — | Set `enabled=false`, record who disabled | User not found |
-| `EnableAdminUser` | username, enabled_by | — | Set `enabled=true` | User not found |
-| `DeleteAdminUser` | username, deleted_by | — | Remove user record | User not found |
-| `ValidatePassword` | username, password | AdminUser or null | Verify password against stored hash; return user if valid, null if not | — |
+| **Users** | | | | |
+| `CreateUser` | user details (username, password, role) | User | Hash password, assign UUID, set defaults. Role determines initial permissions. | User already exists |
+| `GetUser` | username | User or null | Look up user by username | — |
+| `GetUserById` | user_id | User or null | Look up user by ID | — |
+| `ListUsers` | — | User[] | Return all users | — |
+| `UpdateUser` | username, updates (role, permissions, etc.) | — | Apply partial updates to user record | User not found |
+| `SetUserPassword` | username, password_hash, updated_by | — | Replace password hash | User not found |
+| `DisableUser` | username, disabled_by | — | Set `enabled=false`, record who disabled | User not found |
+| `EnableUser` | username, enabled_by | — | Set `enabled=true` | User not found |
+| `DeleteUser` | username, deleted_by | — | Remove user record | User not found |
+| `ValidatePassword` | username, password | User or null | Verify password against stored hash; return user if valid, null if not | — |
 | **Client Management** | | | | |
 | `RegisterClient` | hostname, versions, system_info | ClientInfo | Create new client (status=pending) or return existing | — |
 | `GetClient` | client_id | ClientInfo or null | Look up by ID | — |
@@ -82,12 +82,12 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 
 ## Data Models
 
-### Admin User
+### User
 
 ```json
 {
   "user_id": "uuid-123",
-  "username": "admin_user",
+  "username": "user",
   "password_hash": "$2b$12$...",
   "role": "super_admin",
   "permissions": ["client:approve", "client:reject", "config:write", "user:create"],
@@ -144,9 +144,9 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 | `config:read` | Read system configuration |
 | `config:write` | Modify system configuration |
 | `config:delete` | Delete configuration entries |
-| `user:create` | Create admin users |
-| `user:edit` | Edit admin user properties |
-| `user:delete` | Delete admin users |
+| `user:create` | Create users |
+| `user:edit` | Edit user properties |
+| `user:delete` | Delete users |
 | `audit:read` | View audit trail |
 | `system:manage` | System-level operations |
 
@@ -158,7 +158,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 | `client_manager` | `client:approve`, `client:reject`, `client:configure`, `config:read`, `audit:read` |
 | `viewer` | `config:read`, `audit:read` |
 
-### Admin User Create (Input)
+### User Create (Input)
 
 ```json
 {
@@ -166,11 +166,11 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
   "password": "secure_password_123!",
   "role": "client_manager",
   "custom_permissions": null,
-  "created_by": "admin_user"
+  "created_by": "user"
 }
 ```
 
-### Admin User Update (Input)
+### User Update (Input)
 
 ```json
 {
@@ -178,7 +178,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
   "custom_permissions": null,
   "must_change_password": false,
   "last_login": "2026-02-09T10:15:00Z",
-  "updated_by": "admin_user"
+  "updated_by": "user"
 }
 ```
 
@@ -193,7 +193,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
   "updated_at": "2026-02-09T09:00:00Z",
   "last_seen": "2026-02-09T09:45:00Z",
   "approved_at": "2026-02-01T12:00:00Z",
-  "approved_by": "admin_user",
+  "approved_by": "user",
   "approval_notes": "Production web server",
   "launcher_version": "1.0.0",
   "worker_version": "1.0.1",
@@ -272,7 +272,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
   "type": "bool",
   "created_at": "2026-02-01T00:00:00Z",
   "updated_at": "2026-02-09T10:00:00Z",
-  "updated_by": "admin_user",
+  "updated_by": "user",
   "notes": ""
 }
 ```
@@ -317,7 +317,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
   },
   "created_at": "2026-02-09T10:00:00Z",
   "updated_at": "2026-02-09T10:00:00Z",
-  "updated_by": "admin_user",
+  "updated_by": "user",
   "notes": "Increased scan frequency for troubleshooting"
 }
 ```
@@ -338,7 +338,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 {
   "id": "uuid-action-1",
   "timestamp": "2026-02-09T09:45:23Z",
-  "user_id": "admin_user",
+  "user_id": "user",
   "action": "client_approve",
   "resource": "client",
   "resource_id": "uuid-1",
@@ -359,7 +359,7 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 
 ```json
 {
-  "user_id": "admin_user",
+  "user_id": "user",
   "actions": ["client_approve", "client_reject"],
   "resources": ["client"],
   "resource_id": null,
@@ -417,8 +417,8 @@ The Admin Storage Plugin handles small-scale, ACID-compliant data operations for
 
 #### SQL Schema
 ```sql
--- Admin users table
-CREATE TABLE admin_users (
+-- Users table
+CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL, -- bcrypt hash
@@ -438,12 +438,12 @@ CREATE TABLE admin_users (
     must_change_password BOOLEAN DEFAULT false
 );
 
-CREATE INDEX idx_admin_users_username ON admin_users(username);
-CREATE INDEX idx_admin_users_enabled ON admin_users(enabled);
-CREATE INDEX idx_admin_users_role ON admin_users(role);
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_enabled ON users(enabled);
+CREATE INDEX idx_users_role ON users(role);
 
 -- Default super admin user (password should be changed on first login)
-INSERT INTO admin_users (username, password_hash, role, permissions, created_by, must_change_password)
+INSERT INTO users (username, password_hash, role, permissions, created_by, must_change_password)
 VALUES (
     'admin',
     '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/3YC8iMuKC', -- password: 'changeme'
@@ -708,7 +708,7 @@ CREATE TRIGGER client_config_overrides_updated_at
 | Client already exists | `RegisterClient` with existing hostname | Return existing client (idempotent) |
 | Client not found | Operation on non-existent client_id | Return error to caller |
 | User not found | Operation on non-existent username | Return error to caller |
-| User already exists | `CreateAdminUser` with duplicate username | Return error to caller |
+| User already exists | `CreateUser` with duplicate username | Return error to caller |
 | Storage not initialized | Any operation before `Initialize` | Return error to caller |
 | Invalid status transition | e.g., `approved` → `pending` | Return error to caller |
 | Invalid configuration value | `SetConfig` with wrong type | Return error to caller |

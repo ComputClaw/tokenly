@@ -73,7 +73,7 @@ This folder contains detailed specifications for each component of the Tokenly s
 **Responsibilities:**
 - Client registration and approval management
 - System configuration storage (default settings, feature flags)
-- Admin user management and authentication
+- User management and authentication
 - Audit logging for administrative actions
 - Client statistics and operational metadata
 - Small-scale, ACID-compliant data operations

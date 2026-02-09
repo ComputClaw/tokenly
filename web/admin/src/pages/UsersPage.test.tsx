@@ -2,13 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UsersPage from './UsersPage.tsx';
-import type { AdminUserListResponse } from '../types/api.ts';
+import type { UserListResponse } from '../types/api.ts';
 
 vi.mock('../utils/formatRelative.ts', () => ({
   formatRelative: (iso: string) => iso,
 }));
 
-const mockUserData: AdminUserListResponse = {
+const mockUserData: UserListResponse = {
   users: [
     {
       user_id: 'u1',

@@ -2,11 +2,11 @@ import { useEffect, useState, useRef, type FormEvent } from 'react';
 import StatusBadge from '../components/common/StatusBadge.tsx';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
 import { formatRelative } from '../utils/formatRelative.ts';
-import type { AdminUser } from '../types/api.ts';
+import type { User } from '../types/api.ts';
 import * as api from '../services/api-client.ts';
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -25,7 +25,7 @@ export default function UsersPage() {
     loadUsers();
   }, []);
 
-  async function handleToggleStatus(user: AdminUser) {
+  async function handleToggleStatus(user: User) {
     try {
       if (user.enabled) {
         await api.disableUser(user.username);
@@ -160,7 +160,7 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
         aria-labelledby="add-user-title"
       >
         <div className="p-6">
-          <h2 id="add-user-title" className="text-lg font-bold text-gray-900 mb-4">Create Admin User</h2>
+          <h2 id="add-user-title" className="text-lg font-bold text-gray-900 mb-4">Create User</h2>
           {error && <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

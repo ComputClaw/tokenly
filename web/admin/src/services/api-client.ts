@@ -3,7 +3,7 @@ import type {
   LoginResponse,
   RefreshResponse,
   ClientListResponse,
-  AdminUserListResponse,
+  UserListResponse,
   SystemStatus,
   AuditLogResponse,
   AnalyticsSummary,
@@ -120,8 +120,8 @@ export async function deleteClient(clientId: string): Promise<void> {
 }
 
 // Users
-export async function getUsers(): Promise<AdminUserListResponse> {
-  const res = await api.get<AdminUserListResponse>('/admin/users');
+export async function getUsers(): Promise<UserListResponse> {
+  const res = await api.get<UserListResponse>('/admin/users');
   return res.data;
 }
 

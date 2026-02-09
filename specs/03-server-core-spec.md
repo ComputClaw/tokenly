@@ -315,7 +315,7 @@ X-Checksum-SHA256: abc123def456...
 **Request:**
 ```json
 {
-  "username": "admin_user",
+  "username": "user",
   "password": "secure_password"
 }
 ```
@@ -327,7 +327,7 @@ X-Checksum-SHA256: abc123def456...
   "token_type": "Bearer",
   "expires_in": 900,
   "user": {
-    "username": "admin_user",
+    "username": "user",
     "permissions": ["client_manage", "config_write", "audit_read"]
   }
 }
@@ -379,10 +379,10 @@ Set-Cookie: refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0
 
 ## Administrative API Endpoints
 
-### 1. Admin User Management
+### 1. User Management
 
 #### GET /api/admin/users
-**Purpose:** List all admin users with their roles and status
+**Purpose:** List all users with their roles and status
 
 **Request Headers:**
 ```http
@@ -395,7 +395,7 @@ Authorization: Bearer {admin_jwt_token}
   "users": [
     {
       "user_id": "uuid-123",
-      "username": "admin_user",
+      "username": "user",
       "role": "super_admin",
       "permissions": ["client:approve", "config:write", "user:create"],
       "enabled": true,
@@ -409,7 +409,7 @@ Authorization: Bearer {admin_jwt_token}
 ```
 
 #### POST /api/admin/users
-**Purpose:** Create a new admin user
+**Purpose:** Create a new user
 
 **Request:**
 ```json
@@ -433,7 +433,7 @@ Authorization: Bearer {admin_jwt_token}
 ```
 
 #### PUT /api/admin/users/{username}/disable
-**Purpose:** Disable an admin user
+**Purpose:** Disable a user
 
 **Response:**
 ```json
@@ -517,7 +517,7 @@ Authorization: Bearer {admin_api_key}
   "client_id": "uuid-1",
   "status": "approved",
   "approved_at": "2026-02-09T09:48:00Z",
-  "approved_by": "admin_user"
+  "approved_by": "user"
 }
 ```
 
@@ -691,7 +691,7 @@ Storage is split into two plugin interfaces, wired via dependency injection at s
 
 ### Admin Storage Plugin
 
-Handles client registry, admin users, system configuration, and audit logs. See [04-admin-storage-plugin-spec.md](04-admin-storage-plugin-spec.md) for the full operation table and data models.
+Handles client registry, users, system configuration, and audit logs. See [04-admin-storage-plugin-spec.md](04-admin-storage-plugin-spec.md) for the full operation table and data models.
 
 ### Token Storage Plugin
 
@@ -850,7 +850,7 @@ Storage plugins expose health checks called during startup. The `/api/admin/stat
 - [ ] Monitoring/logging enabled
 - [ ] CI/CD pipeline configured
 - [ ] Backup strategy implemented for persistent storage
-- [ ] Default admin user created
+- [ ] Default user created
 
 ---
 

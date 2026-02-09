@@ -1,4 +1,4 @@
-// Admin User models
+// User models
 
 import type { UserId } from './branded.js';
 
@@ -34,7 +34,7 @@ export const DEFAULT_ROLE_PERMISSIONS = {
   ],
 } as const satisfies Record<string, readonly Permission[]>;
 
-export interface AdminUser {
+export interface User {
   readonly user_id: UserId;
   readonly username: string;
   password_hash: string;
@@ -53,9 +53,9 @@ export interface AdminUser {
 }
 
 // Public-facing user type that never exposes the password hash
-export type PublicAdminUser = Omit<AdminUser, 'password_hash'>;
+export type PublicUser = Omit<User, 'password_hash'>;
 
-export interface AdminUserCreate {
+export interface UserCreate {
   readonly username: string;
   readonly password: string;
   readonly role: AdminRole;
@@ -63,7 +63,7 @@ export interface AdminUserCreate {
   readonly created_by: string;
 }
 
-export interface AdminUserUpdate {
+export interface UserUpdate {
   readonly role?: AdminRole;
   readonly custom_permissions?: Permission[] | null;
   readonly must_change_password?: boolean;

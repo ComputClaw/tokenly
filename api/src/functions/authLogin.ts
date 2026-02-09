@@ -50,7 +50,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
       getClientIp(request), request.headers.get('user-agent') ?? undefined,
     );
 
-    await services.adminStorage.updateAdminUser(user.username, {
+    await services.adminStorage.updateUser(user.username, {
       last_login: new Date().toISOString(),
       updated_by: user.username,
     });

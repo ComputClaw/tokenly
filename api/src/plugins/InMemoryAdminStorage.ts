@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcryptjs';
 import { IAdminStoragePlugin } from '../interfaces/IAdminStoragePlugin.js';
 import {
-  AdminUser, AdminUserCreate, AdminUserUpdate,
+  User, UserCreate, UserUpdate,
   Permission, DEFAULT_ROLE_PERMISSIONS,
   ClientInfo, ClientRegistration, ClientFilter, ClientList,
   ClientConfig, ClientConfigOverride, ClientStatus,
@@ -63,8 +63,8 @@ function getPermissionsForRole(role: string): Permission[] {
 }
 
 export class InMemoryAdminStorage implements IAdminStoragePlugin {
-  private users = new Map<string, AdminUser>();
-  private usersById = new Map<UserId, AdminUser>();
+  private users = new Map<string, User>();
+  private usersById = new Map<UserId, User>();
   private clients = new Map<ClientId, ClientInfo>();
   private clientsByHostname = new Map<string, ClientInfo>();
   private configStore = new Map<string, ConfigValue>();
@@ -89,16 +89,16 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
 
     this.defaultClientConfig = deepClone<ClientConfig>({ ...DEFAULT_CLIENT_CONFIG });
 
-    await this.createAdminUser({
+    await this.createUser({
       username: 'admin',
       password: 'changeme',
       role: 'super_admin',
       created_by: 'system',
     });
 
-    const adminUser = this.users.get('admin');
-    if (adminUser) {
-      adminUser.must_change_password = true;
+    const seededUser = this.users.get('admin');
+    if (seededUser) {
+      seededUser.must_change_password = true;
     }
   }
 
@@ -116,9 +116,9 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
     this.auditLog = [];
   }
 
-  // --- Admin Users ---
+  // --- Users ---
 
-  async createAdminUser(input: AdminUserCreate): Promise<AdminUser> {
+  async createUser(input: UserCreate): Promise<User> {
     if (this.users.has(input.username)) {
       throw new ConflictError(`User already exists: ${input.username}`);
     }
@@ -131,7 +131,7 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
     const passwordHash = await bcrypt.hash(input.password, 12);
     const userId = toUserId(uuidv4());
 
-    const user: AdminUser = {
+    const user: User = {
       user_id: userId,
       username: input.username,
       password_hash: passwordHash,
@@ -154,24 +154,24 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
     return deepClone(user);
   }
 
-  async getAdminUser(username: string): Promise<AdminUser | null> {
+  async getUser(username: string): Promise<User | null> {
     const user = this.users.get(username);
     return user ? deepClone(user) : null;
   }
 
-  async getAdminUserById(userId: string): Promise<AdminUser | null> {
+  async getUserById(userId: string): Promise<User | null> {
     const user = this.usersById.get(toUserId(userId));
     return user ? deepClone(user) : null;
   }
 
-  async listAdminUsers(): Promise<AdminUser[]> {
+  async listUsers(): Promise<User[]> {
     return Array.from(this.users.values()).map(u => deepClone(u));
   }
 
-  async updateAdminUser(username: string, updates: AdminUserUpdate): Promise<void> {
+  async updateUser(username: string, updates: UserUpdate): Promise<void> {
     const user = this.users.get(username);
     if (!user) {
-      throw new NotFoundError('AdminUser', username);
+      throw new NotFoundError('User', username);
     }
 
     if (updates.role !== undefined) {
@@ -192,19 +192,19 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
     user.updated_at = new Date().toISOString();
   }
 
-  async setAdminUserPassword(username: string, passwordHash: string, _updatedBy: string): Promise<void> {
+  async setUserPassword(username: string, passwordHash: string, _updatedBy: string): Promise<void> {
     const user = this.users.get(username);
     if (!user) {
-      throw new NotFoundError('AdminUser', username);
+      throw new NotFoundError('User', username);
     }
     user.password_hash = passwordHash;
     user.updated_at = new Date().toISOString();
   }
 
-  async disableAdminUser(username: string, disabledBy: string): Promise<void> {
+  async disableUser(username: string, disabledBy: string): Promise<void> {
     const user = this.users.get(username);
     if (!user) {
-      throw new NotFoundError('AdminUser', username);
+      throw new NotFoundError('User', username);
     }
     const now = new Date().toISOString();
     user.enabled = false;
@@ -213,10 +213,10 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
     user.updated_at = now;
   }
 
-  async enableAdminUser(username: string, _enabledBy: string): Promise<void> {
+  async enableUser(username: string, _enabledBy: string): Promise<void> {
     const user = this.users.get(username);
     if (!user) {
-      throw new NotFoundError('AdminUser', username);
+      throw new NotFoundError('User', username);
     }
     user.enabled = true;
     user.disabled_at = null;
@@ -224,16 +224,16 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
     user.updated_at = new Date().toISOString();
   }
 
-  async deleteAdminUser(username: string, _deletedBy: string): Promise<void> {
+  async deleteUser(username: string, _deletedBy: string): Promise<void> {
     const user = this.users.get(username);
     if (!user) {
-      throw new NotFoundError('AdminUser', username);
+      throw new NotFoundError('User', username);
     }
     this.users.delete(username);
     this.usersById.delete(user.user_id);
   }
 
-  async validatePassword(username: string, password: string): Promise<AdminUser | null> {
+  async validatePassword(username: string, password: string): Promise<User | null> {
     const user = this.users.get(username);
     if (!user || !user.enabled) {
       return null;

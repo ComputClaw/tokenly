@@ -1,6 +1,6 @@
 import { IAdminStoragePlugin } from '../interfaces/IAdminStoragePlugin.js';
 import {
-  AdminUser, AdminUserCreate, AdminUserUpdate,
+  User, UserCreate, UserUpdate,
   ClientInfo, ClientFilter, ClientList,
   ClientConfig, ClientConfigOverride,
   ConfigValue,
@@ -11,10 +11,10 @@ import {
 export class AdminService {
   constructor(private readonly storage: IAdminStoragePlugin) {}
 
-  // --- Admin Users ---
+  // --- Users ---
 
-  async createUser(input: AdminUserCreate, actorUsername: string, ipAddress?: string): Promise<AdminUser> {
-    const user = await this.storage.createAdminUser(input);
+  async createUser(input: UserCreate, actorUsername: string, ipAddress?: string): Promise<User> {
+    const user = await this.storage.createUser(input);
     await this.storage.logAdminAction({
       user_id: actorUsername,
       action: 'user_create',
@@ -27,20 +27,20 @@ export class AdminService {
     return user;
   }
 
-  async getUser(username: string): Promise<AdminUser | null> {
-    return this.storage.getAdminUser(username);
+  async getUser(username: string): Promise<User | null> {
+    return this.storage.getUser(username);
   }
 
-  async getUserById(userId: string): Promise<AdminUser | null> {
-    return this.storage.getAdminUserById(userId);
+  async getUserById(userId: string): Promise<User | null> {
+    return this.storage.getUserById(userId);
   }
 
-  async listUsers(): Promise<AdminUser[]> {
-    return this.storage.listAdminUsers();
+  async listUsers(): Promise<User[]> {
+    return this.storage.listUsers();
   }
 
-  async updateUser(username: string, updates: AdminUserUpdate, actorUsername: string, ipAddress?: string): Promise<void> {
-    await this.storage.updateAdminUser(username, updates);
+  async updateUser(username: string, updates: UserUpdate, actorUsername: string, ipAddress?: string): Promise<void> {
+    await this.storage.updateUser(username, updates);
     await this.storage.logAdminAction({
       user_id: actorUsername,
       action: 'user_edit',
@@ -53,7 +53,7 @@ export class AdminService {
   }
 
   async changePassword(username: string, passwordHash: string, actorUsername: string, ipAddress?: string): Promise<void> {
-    await this.storage.setAdminUserPassword(username, passwordHash, actorUsername);
+    await this.storage.setUserPassword(username, passwordHash, actorUsername);
     await this.storage.logAdminAction({
       user_id: actorUsername,
       action: 'password_change',
@@ -66,7 +66,7 @@ export class AdminService {
   }
 
   async disableUser(username: string, actorUsername: string, ipAddress?: string): Promise<void> {
-    await this.storage.disableAdminUser(username, actorUsername);
+    await this.storage.disableUser(username, actorUsername);
     await this.storage.logAdminAction({
       user_id: actorUsername,
       action: 'user_disable',
@@ -79,7 +79,7 @@ export class AdminService {
   }
 
   async enableUser(username: string, actorUsername: string, ipAddress?: string): Promise<void> {
-    await this.storage.enableAdminUser(username, actorUsername);
+    await this.storage.enableUser(username, actorUsername);
     await this.storage.logAdminAction({
       user_id: actorUsername,
       action: 'user_enable',
@@ -92,7 +92,7 @@ export class AdminService {
   }
 
   async deleteUser(username: string, actorUsername: string, ipAddress?: string): Promise<void> {
-    await this.storage.deleteAdminUser(username, actorUsername);
+    await this.storage.deleteUser(username, actorUsername);
     await this.storage.logAdminAction({
       user_id: actorUsername,
       action: 'user_delete',
@@ -104,7 +104,7 @@ export class AdminService {
     });
   }
 
-  async validatePassword(username: string, password: string): Promise<AdminUser | null> {
+  async validatePassword(username: string, password: string): Promise<User | null> {
     return this.storage.validatePassword(username, password);
   }
 

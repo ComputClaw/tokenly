@@ -98,7 +98,7 @@ describe('AdminService', () => {
       );
       await service.disableUser('todisable', 'admin', '10.0.0.1');
 
-      const user = await storage.getAdminUser('todisable');
+      const user = await storage.getUser('todisable');
       expect(user!.enabled).toBe(false);
 
       const audit = await storage.getAuditLog({ actions: ['user_disable'] });
@@ -113,7 +113,7 @@ describe('AdminService', () => {
       await service.disableUser('toenable', 'admin');
       await service.enableUser('toenable', 'admin');
 
-      const user = await storage.getAdminUser('toenable');
+      const user = await storage.getUser('toenable');
       expect(user!.enabled).toBe(true);
 
       const audit = await storage.getAuditLog({ actions: ['user_enable'] });
@@ -127,7 +127,7 @@ describe('AdminService', () => {
       );
       await service.deleteUser('todel', 'admin');
 
-      const user = await storage.getAdminUser('todel');
+      const user = await storage.getUser('todel');
       expect(user).toBeNull();
 
       const audit = await storage.getAuditLog({ actions: ['user_delete'] });

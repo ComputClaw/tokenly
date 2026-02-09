@@ -33,7 +33,7 @@ afterAll(async () => {
 
 describe('initialize', () => {
   it('seeds default admin user', async () => {
-    const admin = await storage.getAdminUser('admin');
+    const admin = await storage.getUser('admin');
     expect(admin).not.toBeNull();
     expect(admin!.username).toBe('admin');
     expect(admin!.role).toBe('super_admin');
@@ -66,9 +66,9 @@ describe('initialize', () => {
 // Admin Users
 // ---------------------------------------------------------------------------
 
-describe('Admin Users', () => {
-  it('createAdminUser succeeds with valid input', async () => {
-    const user = await storage.createAdminUser({
+describe('Users', () => {
+  it('createUser succeeds with valid input', async () => {
+    const user = await storage.createUser({
       username: 'testuser',
       password: 'password123',
       role: 'viewer',
@@ -80,8 +80,8 @@ describe('Admin Users', () => {
     expect(user.user_id).toBeDefined();
   });
 
-  it('createAdminUser returns user with password_hash present (deep clone)', async () => {
-    const user = await storage.createAdminUser({
+  it('createUser returns user with password_hash present (deep clone)', async () => {
+    const user = await storage.createUser({
       username: 'testuser2',
       password: 'password123',
       role: 'viewer',
@@ -91,9 +91,9 @@ describe('Admin Users', () => {
     expect(user.password_hash).not.toBe('password123');
   });
 
-  it('createAdminUser fails on duplicate username', async () => {
+  it('createUser fails on duplicate username', async () => {
     await expect(
-      storage.createAdminUser({
+      storage.createUser({
         username: 'admin',
         password: 'another',
         role: 'viewer',
@@ -102,8 +102,8 @@ describe('Admin Users', () => {
     ).rejects.toThrow(ConflictError);
   });
 
-  it('createAdminUser assigns default permissions for role', async () => {
-    const user = await storage.createAdminUser({
+  it('createUser assigns default permissions for role', async () => {
+    const user = await storage.createUser({
       username: 'manager1',
       password: 'pass',
       role: 'client_manager',
@@ -114,8 +114,8 @@ describe('Admin Users', () => {
     expect(user.permissions).not.toContain('user:create');
   });
 
-  it('createAdminUser uses custom permissions when provided', async () => {
-    const user = await storage.createAdminUser({
+  it('createUser uses custom permissions when provided', async () => {
+    const user = await storage.createUser({
       username: 'custom1',
       password: 'pass',
       role: 'custom',
@@ -125,14 +125,14 @@ describe('Admin Users', () => {
     expect(user.permissions).toEqual(['config:read', 'audit:read']);
   });
 
-  it('getAdminUser returns user by username', async () => {
-    const user = await storage.getAdminUser('admin');
+  it('getUser returns user by username', async () => {
+    const user = await storage.getUser('admin');
     expect(user).not.toBeNull();
     expect(user!.username).toBe('admin');
   });
 
-  it('getAdminUser returns null for non-existent user', async () => {
-    const user = await storage.getAdminUser('nonexistent');
+  it('getUser returns null for non-existent user', async () => {
+    const user = await storage.getUser('nonexistent');
     expect(user).toBeNull();
   });
 
@@ -148,13 +148,13 @@ describe('Admin Users', () => {
   });
 
   it('validatePassword returns null for disabled user', async () => {
-    await storage.createAdminUser({
+    await storage.createUser({
       username: 'disabletest',
       password: 'pass123',
       role: 'viewer',
       created_by: 'admin',
     });
-    await storage.disableAdminUser('disabletest', 'system');
+    await storage.disableUser('disabletest', 'system');
     const user = await storage.validatePassword('disabletest', 'pass123');
     expect(user).toBeNull();
   });
@@ -164,36 +164,36 @@ describe('Admin Users', () => {
     expect(user).toBeNull();
   });
 
-  it('disableAdminUser sets enabled=false', async () => {
-    await storage.createAdminUser({
+  it('disableUser sets enabled=false', async () => {
+    await storage.createUser({
       username: 'disabletest2',
       password: 'pass',
       role: 'viewer',
       created_by: 'admin',
     });
-    await storage.disableAdminUser('disabletest2', 'system');
-    const user = await storage.getAdminUser('disabletest2');
+    await storage.disableUser('disabletest2', 'system');
+    const user = await storage.getUser('disabletest2');
     expect(user!.enabled).toBe(false);
     expect(user!.disabled_at).not.toBeNull();
     expect(user!.disabled_by).toBe('system');
   });
 
-  it('enableAdminUser sets enabled=true', async () => {
-    await storage.createAdminUser({
+  it('enableUser sets enabled=true', async () => {
+    await storage.createUser({
       username: 'enabletest',
       password: 'pass',
       role: 'viewer',
       created_by: 'admin',
     });
-    await storage.disableAdminUser('enabletest', 'system');
-    await storage.enableAdminUser('enabletest', 'system');
-    const user = await storage.getAdminUser('enabletest');
+    await storage.disableUser('enabletest', 'system');
+    await storage.enableUser('enabletest', 'system');
+    const user = await storage.getUser('enabletest');
     expect(user!.enabled).toBe(true);
     expect(user!.disabled_at).toBeNull();
   });
 
-  it('setAdminUserPassword changes the password', async () => {
-    await storage.createAdminUser({
+  it('setUserPassword changes the password', async () => {
+    await storage.createUser({
       username: 'pwdtest',
       password: 'oldpass',
       role: 'viewer',
@@ -201,7 +201,7 @@ describe('Admin Users', () => {
     });
     const bcrypt = require('bcryptjs') as typeof import('bcryptjs');
     const newHash = await bcrypt.hash('newpass123', 12);
-    await storage.setAdminUserPassword('pwdtest', newHash, 'admin');
+    await storage.setUserPassword('pwdtest', newHash, 'admin');
 
     const oldResult = await storage.validatePassword('pwdtest', 'oldpass');
     expect(oldResult).toBeNull();
@@ -210,69 +210,69 @@ describe('Admin Users', () => {
     expect(newResult).not.toBeNull();
   });
 
-  it('listAdminUsers returns all users', async () => {
-    const users = await storage.listAdminUsers();
+  it('listUsers returns all users', async () => {
+    const users = await storage.listUsers();
     expect(users.length).toBeGreaterThanOrEqual(2);
     const names = users.map(u => u.username);
     expect(names).toContain('admin');
     expect(names).toContain('testuser');
   });
 
-  it('deleteAdminUser removes the user', async () => {
-    await storage.createAdminUser({
+  it('deleteUser removes the user', async () => {
+    await storage.createUser({
       username: 'todelete',
       password: 'pass',
       role: 'viewer',
       created_by: 'admin',
     });
-    await storage.deleteAdminUser('todelete', 'admin');
-    const user = await storage.getAdminUser('todelete');
+    await storage.deleteUser('todelete', 'admin');
+    const user = await storage.getUser('todelete');
     expect(user).toBeNull();
   });
 
-  it('deleteAdminUser throws NotFoundError for non-existent user', async () => {
+  it('deleteUser throws NotFoundError for non-existent user', async () => {
     await expect(
-      storage.deleteAdminUser('nonexistent', 'admin')
+      storage.deleteUser('nonexistent', 'admin')
     ).rejects.toThrow(NotFoundError);
   });
 
-  it('disableAdminUser throws NotFoundError for non-existent user', async () => {
+  it('disableUser throws NotFoundError for non-existent user', async () => {
     await expect(
-      storage.disableAdminUser('nonexistent', 'admin')
+      storage.disableUser('nonexistent', 'admin')
     ).rejects.toThrow(NotFoundError);
   });
 
-  it('enableAdminUser throws NotFoundError for non-existent user', async () => {
+  it('enableUser throws NotFoundError for non-existent user', async () => {
     await expect(
-      storage.enableAdminUser('nonexistent', 'admin')
+      storage.enableUser('nonexistent', 'admin')
     ).rejects.toThrow(NotFoundError);
   });
 
-  it('setAdminUserPassword throws NotFoundError for non-existent user', async () => {
+  it('setUserPassword throws NotFoundError for non-existent user', async () => {
     await expect(
-      storage.setAdminUserPassword('nonexistent', 'hash', 'admin')
+      storage.setUserPassword('nonexistent', 'hash', 'admin')
     ).rejects.toThrow(NotFoundError);
   });
 
-  it('getAdminUserById returns correct user', async () => {
-    const created = await storage.createAdminUser({
+  it('getUserById returns correct user', async () => {
+    const created = await storage.createUser({
       username: 'byid',
       password: 'pass',
       role: 'viewer',
       created_by: 'admin',
     });
-    const found = await storage.getAdminUserById(created.user_id);
+    const found = await storage.getUserById(created.user_id);
     expect(found).not.toBeNull();
     expect(found!.username).toBe('byid');
   });
 
-  it('getAdminUserById returns null for non-existent id', async () => {
-    const found = await storage.getAdminUserById('nonexistent-id');
+  it('getUserById returns null for non-existent id', async () => {
+    const found = await storage.getUserById('nonexistent-id');
     expect(found).toBeNull();
   });
 
   it('validatePassword locks account after 5 failed attempts', async () => {
-    await storage.createAdminUser({
+    await storage.createUser({
       username: 'locktest',
       password: 'correctpass',
       role: 'viewer',

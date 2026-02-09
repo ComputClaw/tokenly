@@ -24,7 +24,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
       return errorResponse(401, 'invalid_token', 'Refresh token has been revoked or expired');
     }
 
-    const user = await services.adminStorage.getAdminUser(decoded.username);
+    const user = await services.adminStorage.getUser(decoded.username);
     if (!user || !user.enabled) {
       return errorResponse(401, 'user_disabled', 'User account is disabled');
     }
