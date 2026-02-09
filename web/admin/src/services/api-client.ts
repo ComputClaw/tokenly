@@ -31,7 +31,7 @@ export function setAccessToken(token: string | null): void {
 }
 
 const api: AxiosInstance = axios.create({
-  baseURL: '/api/v1',
+  baseURL: '/api',
   withCredentials: true,
 });
 

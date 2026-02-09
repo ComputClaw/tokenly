@@ -54,7 +54,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
 
 app.http('authRefresh', {
   methods: ['POST', 'OPTIONS'],
-  route: 'v1/auth/refresh',
+  route: 'auth/refresh',
   authLevel: 'anonymous',
   handler,
 });

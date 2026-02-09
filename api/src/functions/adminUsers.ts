@@ -195,7 +195,7 @@ async function changePasswordHandler(request: HttpRequest, _context: InvocationC
 
 app.http('adminUsers', {
   methods: ['GET', 'POST', 'OPTIONS'],
-  route: 'v1/admin/users',
+  route: 'admin/users',
   authLevel: 'anonymous',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponse> => {
     if (request.method === 'GET') return listUsersHandler(request, context);
@@ -206,21 +206,21 @@ app.http('adminUsers', {
 
 app.http('adminUserDisable', {
   methods: ['PUT', 'OPTIONS'],
-  route: 'v1/admin/users/{username}/disable',
+  route: 'admin/users/{username}/disable',
   authLevel: 'anonymous',
   handler: disableUserHandler,
 });
 
 app.http('adminUserEnable', {
   methods: ['PUT', 'OPTIONS'],
-  route: 'v1/admin/users/{username}/enable',
+  route: 'admin/users/{username}/enable',
   authLevel: 'anonymous',
   handler: enableUserHandler,
 });
 
 app.http('adminUserPassword', {
   methods: ['PUT', 'OPTIONS'],
-  route: 'v1/admin/users/{username}/password',
+  route: 'admin/users/{username}/password',
   authLevel: 'anonymous',
   handler: changePasswordHandler,
 });

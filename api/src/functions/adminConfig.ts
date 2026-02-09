@@ -94,7 +94,7 @@ async function setConfigHandler(request: HttpRequest, _context: InvocationContex
 
 app.http('adminConfigList', {
   methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/config',
+  route: 'admin/config',
   authLevel: 'anonymous',
   handler: listConfigHandler,
 });
@@ -132,7 +132,7 @@ async function deleteConfigHandler(request: HttpRequest, _context: InvocationCon
 
 app.http('adminConfigKey', {
   methods: ['GET', 'PUT', 'DELETE', 'OPTIONS'],
-  route: 'v1/admin/config/{key}',
+  route: 'admin/config/{key}',
   authLevel: 'anonymous',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponse> => {
     if (request.method === 'GET') return getConfigHandler(request, context);
