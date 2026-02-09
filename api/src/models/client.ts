@@ -3,7 +3,7 @@
 import type { ClientId } from './branded.js';
 
 export type ClientStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
-export type WorkerStatus = 'running' | 'stopped' | 'crashed' | 'updating';
+export type WorkerStatus = 'running' | 'pending' | 'stopped' | 'crashed';
 
 export interface SystemInfo {
   readonly os: string;

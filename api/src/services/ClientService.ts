@@ -9,10 +9,10 @@ import {
 export interface HeartbeatRequest {
   client_hostname: string;
   timestamp: string;
-  launcher_version?: string;
-  worker_version?: string;
-  worker_status?: string;
-  system_info?: {
+  launcher_version: string;
+  worker_version: string;
+  worker_status: string;
+  system_info: {
     os: string;
     arch: string;
     platform: string;

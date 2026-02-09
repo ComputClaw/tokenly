@@ -25,6 +25,13 @@ function makeHeartbeat(hostname: string, overrides: Partial<HeartbeatRequest> = 
     client_hostname: hostname,
     timestamp: new Date().toISOString(),
     launcher_version: '1.0.0',
+    worker_version: '1.0.0',
+    worker_status: 'running',
+    system_info: {
+      os: 'linux',
+      arch: 'x64',
+      platform: 'Ubuntu 24.04',
+    },
     ...overrides,
   };
 }

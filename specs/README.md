@@ -126,7 +126,29 @@ This folder contains detailed specifications for each component of the Tokenly s
 
 ---
 
-### 7. Update Distribution *(Planned)*
+### 7. Client Protocol
+**File:** [`07-client-protocol-spec.md`](07-client-protocol-spec.md)
+**Purpose:** Language-agnostic protocol contracts for client ↔ server interoperability
+
+**Responsibilities:**
+- Define wire formats (heartbeat, ingest HTTP contracts)
+- Shared file schemas (state file, learning file)
+- IPC contract between launcher and worker
+- CLI argument, binary naming, and logging contracts
+- Compliance test suite for validating any client implementation
+
+**Key Interfaces:**
+- HTTP protocol (heartbeat, ingest endpoints)
+- IPC protocol (newline-delimited JSON over sockets/pipes)
+- File format contracts (state, learning)
+- Service integration contract (systemd, SCM, launchd)
+
+**Implementation design docs:** Each client implementation has its own `DESIGN.md`:
+- **Go** — [`client/go/DESIGN.md`](../client/go/DESIGN.md)
+
+---
+
+### 8. Update Distribution *(Planned)*
 **Purpose:** Binary versioning, building, and distribution system
 
 **Responsibilities:**

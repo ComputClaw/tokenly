@@ -53,6 +53,7 @@ Tokenly2/
 | `specs/04-admin-storage-plugin-spec.md` | Admin Storage Plugin - client registry, config, users, audit |
 | `specs/05-token-storage-plugin-spec.md` | Token Storage Plugin - high-volume usage data and analytics |
 | `specs/06-admin-interface-spec.md` | Admin Interface - React SPA for management and analytics |
+| `specs/07-client-protocol-spec.md` | Client Protocol - language-agnostic interoperability contracts |
 
 ## Implementation Scope
 
