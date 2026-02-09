@@ -9,6 +9,7 @@ dist-ssr/
 *.local
 .env
 .env.*
+local.settings.json
 
 # Logs
 logs/
@@ -28,3 +29,8 @@ npm-debug.log*
 
 # OS
 Thumbs.db
+nul
+
+# Local dev tools
+ServiceHost.exe
+ServiceHost.json

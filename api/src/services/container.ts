@@ -1,6 +1,7 @@
 import { IAdminStoragePlugin } from '../interfaces/IAdminStoragePlugin.js';
 import { ITokenStoragePlugin } from '../interfaces/ITokenStoragePlugin.js';
 import { InMemoryAdminStorage } from '../plugins/InMemoryAdminStorage.js';
+import { AzureTableAdminStorage } from '../plugins/AzureTableAdminStorage.js';
 import { InMemoryTokenStorage } from '../plugins/InMemoryTokenStorage.js';
 import { AdminService } from './AdminService.js';
 import { ClientService } from './ClientService.js';
@@ -24,7 +25,10 @@ export async function createServices(): Promise<ServiceContainer> {
   if (container) return container;
 
   // Create storage plugins
-  const adminStorage = new InMemoryAdminStorage();
+  const adminBackend = process.env['ADMIN_STORAGE_BACKEND'] ?? 'memory';
+  const adminStorage: IAdminStoragePlugin = adminBackend === 'azure_table'
+    ? new AzureTableAdminStorage()
+    : new InMemoryAdminStorage();
   const tokenStorage = new InMemoryTokenStorage();
 
   // Initialize storage
