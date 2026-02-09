@@ -3,7 +3,6 @@ import * as bcrypt from 'bcryptjs';
 import {
   TableClient,
   TableServiceClient,
-  TableTransaction,
   type TableEntity,
 } from '@azure/data-tables';
 import { IAdminStoragePlugin } from '../interfaces/IAdminStoragePlugin.js';
@@ -231,14 +230,13 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
         created_by: 'system',
       });
       // Set must_change_password after creation
-      const nameRow = await this.getEntity(this.usersTable, 'users', `name~${user.username}`);
-      if (nameRow) {
-        nameRow['must_change_password'] = true;
-        const idRow = { ...nameRow, rowKey: `id~${user.user_id}` };
-        const tx = new TableTransaction();
-        tx.updateEntity({ ...nameRow, partitionKey: 'users', rowKey: `name~${user.username}` }, 'Replace');
-        tx.updateEntity({ ...idRow, partitionKey: 'users', rowKey: `id~${user.user_id}` }, 'Replace');
-        await this.usersTable.submitTransaction(tx.actions);
+      const entity = await this.getEntity(this.usersTable, 'users', `name~${user.username}`);
+      if (entity) {
+        entity['must_change_password'] = true;
+        await this.usersTable.upsertEntity(
+          { ...entity, partitionKey: 'users', rowKey: `name~${user.username}` } as TableEntity,
+          'Replace',
+        );
       }
     }
   }
@@ -278,13 +276,8 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
       must_change_password: false,
     };
 
-    const nameEntity = adminUserToEntity('users', `name~${user.username}`, user);
-    const idEntity = adminUserToEntity('users', `id~${user.user_id}`, user);
-
-    const tx = new TableTransaction();
-    tx.createEntity(nameEntity);
-    tx.createEntity(idEntity);
-    await this.usersTable.submitTransaction(tx.actions);
+    const entity = adminUserToEntity('users', `name~${user.username}`, user);
+    await this.usersTable.createEntity(entity);
 
     return deepClone(user);
   }
@@ -296,9 +289,15 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
   }
 
   async getAdminUserById(userId: string): Promise<AdminUser | null> {
-    const entity = await this.getEntity(this.usersTable, 'users', `id~${userId}`);
-    if (!entity) return null;
-    return entityToAdminUser(entity);
+    // Scan all name~ rows and find by user_id (acceptable at small user counts)
+    for await (const entity of this.usersTable.listEntities<Record<string, unknown>>({
+      queryOptions: { filter: `PartitionKey eq 'users' and RowKey ge 'name~' and RowKey lt 'namf'` },
+    })) {
+      if (entity['user_id'] === userId) {
+        return entityToAdminUser(entity);
+      }
+    }
+    return null;
   }
 
   async listAdminUsers(): Promise<AdminUser[]> {
@@ -332,7 +331,7 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     }
     user.updated_at = new Date().toISOString();
 
-    await this.writeUserDualRow(user);
+    await this.writeUser(user);
   }
 
   async setAdminUserPassword(username: string, passwordHash: string, _updatedBy: string): Promise<void> {
@@ -341,7 +340,7 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
 
     user.password_hash = passwordHash;
     user.updated_at = new Date().toISOString();
-    await this.writeUserDualRow(user);
+    await this.writeUser(user);
   }
 
   async disableAdminUser(username: string, disabledBy: string): Promise<void> {
@@ -353,7 +352,7 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     user.disabled_at = now;
     user.disabled_by = disabledBy;
     user.updated_at = now;
-    await this.writeUserDualRow(user);
+    await this.writeUser(user);
   }
 
   async enableAdminUser(username: string, _enabledBy: string): Promise<void> {
@@ -364,17 +363,14 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     user.disabled_at = null;
     user.disabled_by = '';
     user.updated_at = new Date().toISOString();
-    await this.writeUserDualRow(user);
+    await this.writeUser(user);
   }
 
   async deleteAdminUser(username: string, _deletedBy: string): Promise<void> {
     const user = await this.getAdminUser(username);
     if (!user) throw new NotFoundError('AdminUser', username);
 
-    const tx = new TableTransaction();
-    tx.deleteEntity('users', `name~${user.username}`);
-    tx.deleteEntity('users', `id~${user.user_id}`);
-    await this.usersTable.submitTransaction(tx.actions);
+    await this.usersTable.deleteEntity('users', `name~${user.username}`);
   }
 
   async validatePassword(username: string, password: string): Promise<AdminUser | null> {
@@ -394,23 +390,19 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
       if (user.failed_attempts >= 5) {
         user.locked_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
       }
-      await this.writeUserDualRow(user);
+      await this.writeUser(user);
       return null;
     }
 
     user.failed_attempts = 0;
     user.locked_until = null;
-    await this.writeUserDualRow(user);
+    await this.writeUser(user);
     return deepClone(user);
   }
 
-  private async writeUserDualRow(user: AdminUser): Promise<void> {
-    const nameEntity = adminUserToEntity('users', `name~${user.username}`, user);
-    const idEntity = adminUserToEntity('users', `id~${user.user_id}`, user);
-    const tx = new TableTransaction();
-    tx.upsertEntity(nameEntity, 'Replace');
-    tx.upsertEntity(idEntity, 'Replace');
-    await this.usersTable.submitTransaction(tx.actions);
+  private async writeUser(user: AdminUser): Promise<void> {
+    const entity = adminUserToEntity('users', `name~${user.username}`, user);
+    await this.usersTable.upsertEntity(entity, 'Replace');
   }
 
   // ── Client Management ─────────────────────────────────────────────────
@@ -450,7 +442,8 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
       custom_config: {},
     };
 
-    await this.writeClientDualRow(client);
+    const entity = clientInfoToEntity('clients', `id~${client.client_id}`, client);
+    await this.clientsTable.createEntity(entity);
     return deepClone(client);
   }
 
@@ -461,9 +454,15 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
   }
 
   async getClientByHostname(hostname: string): Promise<ClientInfo | null> {
-    const entity = await this.getEntity(this.clientsTable, 'clients', `host~${hostname}`);
-    if (!entity) return null;
-    return entityToClientInfo(entity);
+    // Scan all id~ rows and find by hostname (acceptable at small client counts)
+    for await (const entity of this.clientsTable.listEntities<Record<string, unknown>>({
+      queryOptions: { filter: `PartitionKey eq 'clients' and RowKey ge 'id~' and RowKey lt 'ie'` },
+    })) {
+      if (entity['hostname'] === hostname) {
+        return entityToClientInfo(entity);
+      }
+    }
+    return null;
   }
 
   async updateClient(clientId: string, updates: Partial<ClientInfo>): Promise<void> {
@@ -480,7 +479,7 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     }
     client.updated_at = new Date().toISOString();
 
-    await this.writeClientDualRow(client);
+    await this.writeClient(client);
   }
 
   async listClients(filter: ClientFilter): Promise<ClientList> {
@@ -551,10 +550,7 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     const client = await this.getClient(clientId);
     if (!client) throw new NotFoundError('Client', clientId);
 
-    const tx = new TableTransaction();
-    tx.deleteEntity('clients', `id~${client.client_id}`);
-    tx.deleteEntity('clients', `host~${client.hostname}`);
-    await this.clientsTable.submitTransaction(tx.actions);
+    await this.clientsTable.deleteEntity('clients', `id~${client.client_id}`);
 
     // Also remove config overrides
     await this.overridesTable.deleteEntity('override', clientId).catch(() => { /* ignore */ });
@@ -576,7 +572,7 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
       client.approval_notes = notes;
     }
 
-    await this.writeClientDualRow(client);
+    await this.writeClient(client);
   }
 
   async getPendingClients(): Promise<ClientInfo[]> {
@@ -592,13 +588,9 @@ export class AzureTableAdminStorage implements IAdminStoragePlugin {
     return all;
   }
 
-  private async writeClientDualRow(client: ClientInfo): Promise<void> {
-    const idEntity = clientInfoToEntity('clients', `id~${client.client_id}`, client);
-    const hostEntity = clientInfoToEntity('clients', `host~${client.hostname}`, client);
-    const tx = new TableTransaction();
-    tx.upsertEntity(idEntity, 'Replace');
-    tx.upsertEntity(hostEntity, 'Replace');
-    await this.clientsTable.submitTransaction(tx.actions);
+  private async writeClient(client: ClientInfo): Promise<void> {
+    const entity = clientInfoToEntity('clients', `id~${client.client_id}`, client);
+    await this.clientsTable.upsertEntity(entity, 'Replace');
   }
 
   // ── Configuration ─────────────────────────────────────────────────────
