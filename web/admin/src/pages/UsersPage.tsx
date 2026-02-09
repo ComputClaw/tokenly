@@ -234,7 +234,6 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
 }
 
 function ChangePasswordModal({ username, onClose }: { username: string; onClose: () => void }) {
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -263,7 +262,7 @@ function ChangePasswordModal({ username, onClose }: { username: string; onClose:
     setSubmitting(true);
     setError('');
     try {
-      await api.changePassword(username, currentPassword, newPassword);
+      await api.changePassword(username, '', newPassword);
       setSuccess(true);
       timerRef.current = setTimeout(onClose, 1500);
     } catch {
@@ -287,10 +286,6 @@ function ChangePasswordModal({ username, onClose }: { username: string; onClose:
           {error && <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">{error}</div>}
           {success && <div className="mb-4 p-3 rounded-md bg-green-50 text-green-700 text-sm">Password changed successfully</div>}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="current-pw" className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-              <input id="current-pw" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" />
-            </div>
             <div>
               <label htmlFor="new-pw" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
               <input id="new-pw" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={12} className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" />

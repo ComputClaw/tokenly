@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { AxiosHeaders } from 'axios';
 
 // We need to test the module's exported functions and interceptor behavior.
 // We'll mock axios.create() to return a controllable fake instance.
@@ -9,7 +8,6 @@ interface FakeConfig {
 }
 
 let requestInterceptorFn: (config: FakeConfig) => FakeConfig;
-let responseSuccessFn: (response: unknown) => unknown;
 let responseErrorFn: (error: unknown) => Promise<unknown>;
 
 const mockPost = vi.fn();
@@ -27,8 +25,7 @@ Object.assign(mockInstance, {
       }),
     },
     response: {
-      use: vi.fn((success: (r: unknown) => unknown, error: (e: unknown) => Promise<unknown>) => {
-        responseSuccessFn = success;
+      use: vi.fn((_success: (r: unknown) => unknown, error: (e: unknown) => Promise<unknown>) => {
         responseErrorFn = error;
       }),
     },
@@ -107,12 +104,12 @@ describe('API Client', () => {
       config: originalConfig,
     };
 
-    const result = await responseErrorFn(error);
+    await responseErrorFn(error);
     expect(mockPost).toHaveBeenCalledWith('/auth/refresh');
     expect(originalConfig.headers.Authorization).toBe('Bearer new-token');
   });
 
-  it('failed refresh redirects to login', async () => {
+  it('failed refresh clears token and rejects', async () => {
     const mod = await import('./api-client.ts');
     mod.setAccessToken('expired');
 
@@ -121,27 +118,12 @@ describe('API Client', () => {
     // Mock refresh failure
     mockPost.mockRejectedValueOnce(new Error('Refresh failed'));
 
-    // Save and mock window.location
-    const originalLocation = window.location;
-    Object.defineProperty(window, 'location', {
-      value: { href: '' },
-      writable: true,
-      configurable: true,
-    });
-
     const error = {
       response: { status: 401 },
       config: originalConfig,
     };
 
     await expect(responseErrorFn(error)).rejects.toBeDefined();
-    expect(window.location.href).toBe('/login');
-
-    // Restore
-    Object.defineProperty(window, 'location', {
-      value: originalLocation,
-      writable: true,
-      configurable: true,
-    });
+    expect(mod.getAccessToken()).toBeNull();
   });
 });

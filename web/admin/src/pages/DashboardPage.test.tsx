@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import DashboardPage from './DashboardPage.tsx';
-import type { SystemStatus, TrendDataPoint } from '../types/api.ts';
+import type { SystemStatus, TrendData } from '../types/api.ts';
 
 // Mock chart.js to avoid canvas issues in jsdom
 vi.mock('react-chartjs-2', () => ({
@@ -27,10 +27,16 @@ const mockStatus: SystemStatus = {
   ingestion: { files_today: 5, records_today: 2500, average_processing_time_ms: 45, errors_today: 1 },
 };
 
-const mockTrend: TrendDataPoint[] = [
-  { date: '2026-02-01', cost: 10.5, tokens: 1000, requests: 50 },
-  { date: '2026-02-02', cost: 12.3, tokens: 1200, requests: 60 },
-];
+const mockTrend: TrendData = {
+  data_points: [
+    { timestamp: '2026-02-01T00:00:00Z', value: 10.5, count: 50 },
+    { timestamp: '2026-02-02T00:00:00Z', value: 12.3, count: 60 },
+  ],
+  total_value: 22.8,
+  average_value: 11.4,
+  metric: 'cost',
+  interval: 'day',
+};
 
 const mockGetStatus = vi.fn();
 const mockGetTrend = vi.fn();

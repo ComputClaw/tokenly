@@ -171,7 +171,7 @@ async function changePasswordHandler(request: HttpRequest, _context: InvocationC
       return errorResponse(400, 'validation_failed', 'new_password is required');
     }
 
-    if (username === authUser.username) {
+    if (username === authUser.username && !requirePermission(authUser, 'user:edit')) {
       if (!isNonEmptyString(body.current_password)) {
         return errorResponse(400, 'validation_failed', 'current_password is required when changing your own password');
       }
@@ -193,18 +193,15 @@ async function changePasswordHandler(request: HttpRequest, _context: InvocationC
   }
 }
 
-app.http('adminUsersList', {
-  methods: ['GET', 'OPTIONS'],
+app.http('adminUsers', {
+  methods: ['GET', 'POST', 'OPTIONS'],
   route: 'v1/admin/users',
   authLevel: 'anonymous',
-  handler: listUsersHandler,
-});
-
-app.http('adminUsersCreate', {
-  methods: ['POST', 'OPTIONS'],
-  route: 'v1/admin/users',
-  authLevel: 'anonymous',
-  handler: createUserHandler,
+  handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponse> => {
+    if (request.method === 'GET') return listUsersHandler(request, context);
+    if (request.method === 'POST') return createUserHandler(request, context);
+    return handleOptions();
+  },
 });
 
 app.http('adminUserDisable', {

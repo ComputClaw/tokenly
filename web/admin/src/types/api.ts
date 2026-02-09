@@ -108,33 +108,57 @@ export interface AuditLogResponse {
 }
 
 export interface AnalyticsSummary {
+  period: {
+    start_time: string;
+    end_time: string;
+  };
   total_cost: number;
   total_tokens: number;
   total_requests: number;
-  period_start: string;
-  period_end: string;
+  service_breakdown: Record<string, { service: string; cost: number; tokens: number; requests: number }>;
+  model_breakdown: Record<string, { model: string; cost: number; tokens: number; requests: number }>;
+  client_breakdown: Record<string, { client_id: string; hostname: string; cost: number; tokens: number; requests: number }>;
 }
 
 export interface TrendDataPoint {
-  date: string;
-  cost: number;
-  tokens: number;
-  requests: number;
+  timestamp: string;
+  value: number;
+  count: number;
 }
 
-export interface TopUsageEntry {
+export interface TrendData {
+  data_points: TrendDataPoint[];
+  total_value: number;
+  average_value: number;
+  metric: string;
+  interval: string;
+}
+
+export interface TopUsageRanking {
   name: string;
-  cost: number;
-  tokens: number;
-  requests: number;
+  value: number;
+  percentage: number;
+  record_count: number;
+}
+
+export interface TopUsageResult {
+  rankings: TopUsageRanking[];
+  total_value: number;
+  requested_top: number;
 }
 
 export interface CostBreakdownEntry {
-  service: string;
-  model: string;
+  dimensions: Record<string, string>;
   cost: number;
-  tokens: number;
-  requests: number;
+  percentage: number;
+  token_count: number;
+  request_count: number;
+}
+
+export interface CostBreakdown {
+  total_cost: number;
+  breakdowns: CostBreakdownEntry[];
+  currency: string;
 }
 
 export interface ConfigEntry {

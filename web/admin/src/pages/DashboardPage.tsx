@@ -13,14 +13,14 @@ import {
 } from 'chart.js';
 import MetricCard from '../components/common/MetricCard.tsx';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
-import type { SystemStatus, TrendDataPoint } from '../types/api.ts';
+import type { SystemStatus, TrendData } from '../types/api.ts';
 import * as api from '../services/api-client.ts';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 export default function DashboardPage() {
   const [status, setStatus] = useState<SystemStatus | null>(null);
-  const [trend, setTrend] = useState<TrendDataPoint[]>([]);
+  const [trend, setTrend] = useState<TrendData | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -34,19 +34,21 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const dataPoints = trend?.data_points ?? [];
+
   const chartData = useMemo(() => ({
-    labels: trend.map((d) => d.date),
+    labels: dataPoints.map((d) => d.timestamp.slice(0, 10)),
     datasets: [
       {
-        label: 'Cost ($)',
-        data: trend.map((d) => d.cost),
+        label: trend?.metric ?? 'Cost',
+        data: dataPoints.map((d) => d.value),
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,
         tension: 0.3,
       },
     ],
-  }), [trend]);
+  }), [dataPoints, trend?.metric]);
 
   const chartOptions = useMemo(() => ({
     responsive: true,
@@ -84,7 +86,7 @@ export default function DashboardPage() {
 
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Usage Trend</h2>
-        {trend.length > 0 ? (
+        {dataPoints.length > 0 ? (
           <Line data={chartData} options={chartOptions} />
         ) : (
           <p className="text-gray-500 text-sm">No trend data available</p>

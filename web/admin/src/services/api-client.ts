@@ -7,9 +7,9 @@ import type {
   SystemStatus,
   AuditLogResponse,
   AnalyticsSummary,
-  TrendDataPoint,
-  TopUsageEntry,
-  CostBreakdownEntry,
+  TrendData,
+  TopUsageResult,
+  CostBreakdown,
   ConfigEntry,
 } from '../types/api.ts';
 import {
@@ -49,7 +49,8 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       originalRequest &&
-      !retriedRequests.has(originalRequest)
+      !retriedRequests.has(originalRequest) &&
+      !originalRequest.url?.includes('/auth/refresh')
     ) {
       retriedRequests.add(originalRequest);
       try {
@@ -58,7 +59,6 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch {
         accessToken = null;
-        window.location.href = '/login';
         return Promise.reject(error);
       }
     }
@@ -177,32 +177,48 @@ export async function getAuditLog(params?: {
 
 // Analytics
 export async function getAnalyticsSummary(period?: string): Promise<AnalyticsSummary> {
-  const res = await api.get<AnalyticsSummary>('/admin/analytics/summary', {
-    params: period ? { period } : undefined,
-  });
+  const params: Record<string, string> = {};
+  if (period) {
+    const days = parseInt(period, 10) || 30;
+    params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    params.end_time = new Date().toISOString();
+  }
+  const res = await api.get<AnalyticsSummary>('/admin/analytics/summary', { params });
   return res.data;
 }
 
-export async function getTrend(period?: string): Promise<TrendDataPoint[]> {
-  const res = await api.get<TrendDataPoint[]>('/admin/analytics/trend', {
-    params: period ? { period } : undefined,
-  });
+export async function getTrend(period?: string): Promise<TrendData> {
+  const params: Record<string, string> = {};
+  if (period) {
+    const days = parseInt(period, 10) || 30;
+    params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    params.end_time = new Date().toISOString();
+  }
+  const res = await api.get<TrendData>('/admin/analytics/trend', { params });
   return res.data;
 }
 
 export async function getTopUsage(
   groupBy: string,
   period?: string,
-): Promise<TopUsageEntry[]> {
-  const res = await api.get<TopUsageEntry[]>('/admin/analytics/top', {
-    params: { group_by: groupBy, ...(period ? { period } : {}) },
-  });
+): Promise<TopUsageResult> {
+  const params: Record<string, string> = { group_by: groupBy };
+  if (period) {
+    const days = parseInt(period, 10) || 30;
+    params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    params.end_time = new Date().toISOString();
+  }
+  const res = await api.get<TopUsageResult>('/admin/analytics/top', { params });
   return res.data;
 }
 
-export async function getCostBreakdown(period?: string): Promise<CostBreakdownEntry[]> {
-  const res = await api.get<CostBreakdownEntry[]>('/admin/analytics/costs', {
-    params: period ? { period } : undefined,
-  });
+export async function getCostBreakdown(period?: string): Promise<CostBreakdown> {
+  const params: Record<string, string> = {};
+  if (period) {
+    const days = parseInt(period, 10) || 30;
+    params.start_time = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    params.end_time = new Date().toISOString();
+  }
+  const res = await api.get<CostBreakdown>('/admin/analytics/cost-breakdown', { params });
   return res.data;
 }

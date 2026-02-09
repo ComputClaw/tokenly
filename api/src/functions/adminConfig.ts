@@ -99,13 +99,6 @@ app.http('adminConfigList', {
   handler: listConfigHandler,
 });
 
-app.http('adminConfigGet', {
-  methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/config/{key}',
-  authLevel: 'anonymous',
-  handler: getConfigHandler,
-});
-
 async function deleteConfigHandler(request: HttpRequest, _context: InvocationContext): Promise<HttpResponse> {
   if (request.method === 'OPTIONS') return handleOptions();
 
@@ -137,16 +130,14 @@ async function deleteConfigHandler(request: HttpRequest, _context: InvocationCon
   }
 }
 
-app.http('adminConfigSet', {
-  methods: ['PUT', 'OPTIONS'],
+app.http('adminConfigKey', {
+  methods: ['GET', 'PUT', 'DELETE', 'OPTIONS'],
   route: 'v1/admin/config/{key}',
   authLevel: 'anonymous',
-  handler: setConfigHandler,
-});
-
-app.http('adminConfigDelete', {
-  methods: ['DELETE', 'OPTIONS'],
-  route: 'v1/admin/config/{key}',
-  authLevel: 'anonymous',
-  handler: deleteConfigHandler,
+  handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponse> => {
+    if (request.method === 'GET') return getConfigHandler(request, context);
+    if (request.method === 'PUT') return setConfigHandler(request, context);
+    if (request.method === 'DELETE') return deleteConfigHandler(request, context);
+    return handleOptions();
+  },
 });
