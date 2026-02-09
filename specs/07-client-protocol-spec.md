@@ -39,7 +39,7 @@ client/
 
 ### 1. Heartbeat Protocol
 
-**Endpoint:** `POST {server}/api/v1/heartbeat`
+**Endpoint:** `POST {server}/api/heartbeat`
 
 **Request contract:**
 ```json
@@ -76,7 +76,7 @@ client/
 
 ### 2. Ingestion Protocol
 
-**Endpoint:** `POST {server}/api/v1/ingest`
+**Endpoint:** `POST {server}/api/ingest`
 
 **Request contract:** `multipart/form-data` with two parts:
 

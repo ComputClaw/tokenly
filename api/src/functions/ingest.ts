@@ -87,7 +87,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
 
 app.http('ingest', {
   methods: ['POST', 'OPTIONS'],
-  route: 'v1/ingest',
+  route: 'ingest',
   authLevel: 'anonymous',
   handler,
 });

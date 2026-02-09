@@ -135,28 +135,28 @@ async function costBreakdownHandler(request: HttpRequest, _context: InvocationCo
 
 app.http('adminAnalyticsSummary', {
   methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/analytics/summary',
+  route: 'admin/analytics/summary',
   authLevel: 'anonymous',
   handler: summaryHandler,
 });
 
 app.http('adminAnalyticsTrend', {
   methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/analytics/trend',
+  route: 'admin/analytics/trend',
   authLevel: 'anonymous',
   handler: trendHandler,
 });
 
 app.http('adminAnalyticsTop', {
   methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/analytics/top',
+  route: 'admin/analytics/top',
   authLevel: 'anonymous',
   handler: topHandler,
 });
 
 app.http('adminAnalyticsCostBreakdown', {
   methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/analytics/cost-breakdown',
+  route: 'admin/analytics/cost-breakdown',
   authLevel: 'anonymous',
   handler: costBreakdownHandler,
 });

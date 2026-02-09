@@ -38,7 +38,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
 
 app.http('authLogout', {
   methods: ['POST', 'OPTIONS'],
-  route: 'v1/auth/logout',
+  route: 'auth/logout',
   authLevel: 'anonymous',
   handler,
 });

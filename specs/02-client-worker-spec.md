@@ -304,7 +304,7 @@ For each validated file:
 4. Prepare HTTP multipart/form-data request:
    - Part 1: `metadata` field (JSON string with file metadata)
    - Part 2: `file` field (file contents with original filename)
-5. Send POST request to `{server}/api/v1/ingest` with client ID header
+5. Send POST request to `{server}/api/ingest` with client ID header
 6. Handle response:
 
 | HTTP Status | Meaning | Action |

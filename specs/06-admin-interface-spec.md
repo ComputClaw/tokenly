@@ -432,13 +432,13 @@ Viewer:
 The admin interface authenticates using JWT tokens with httpOnly refresh cookies:
 
 1. **Login flow:**
-   a. Send `POST /api/v1/auth/login` with username and password (include credentials for cookie handling)
+   a. Send `POST /api/auth/login` with username and password (include credentials for cookie handling)
    b. On success, receive access token in response body and refresh token as httpOnly cookie
    c. Store access token in memory only (not localStorage — XSS protection)
    d. Update application auth state with user info and permissions
 
 2. **Token refresh flow:**
-   a. Send `POST /api/v1/auth/refresh` with credentials (sends httpOnly cookie automatically)
+   a. Send `POST /api/auth/refresh` with credentials (sends httpOnly cookie automatically)
    b. Receive new access token in response
    c. Update in-memory token
 
@@ -450,7 +450,7 @@ The admin interface authenticates using JWT tokens with httpOnly refresh cookies
 
 4. **Logout:**
    a. Clear in-memory access token
-   b. Send `POST /api/v1/auth/logout` with credentials to clear server-side refresh token
+   b. Send `POST /api/auth/logout` with credentials to clear server-side refresh token
    c. Reset application auth state
 
 #### API Client Behavior
@@ -711,7 +711,7 @@ App
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `API_BASE_URL` | No | `http://localhost:7071/api/v1` | Backend API endpoint |
+| `API_BASE_URL` | No | `http://localhost:7071/api` | Backend API endpoint |
 | `WEBSOCKET_URL` | No | `ws://localhost:7071/ws` | WebSocket endpoint for real-time updates |
 | `AUTH_PROVIDER` | No | `local` | Authentication provider (`local`, `oauth2`, `saml`) |
 | `ANALYTICS_ENABLED` | No | `false` | Enable frontend analytics tracking |

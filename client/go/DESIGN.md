@@ -16,7 +16,7 @@ The Go client is the first (reference) implementation of the Tokenly client. It 
 | Logging | `log/slog` (stdlib) | Structured JSON logging built into Go 1.21+ |
 | File watching | `fsnotify/fsnotify` | Optional — for reactive scanning vs polling |
 | Glob matching | `doublestar` | For `**` glob patterns in discovery paths |
-| Hashing | `crypto/sha256` (stdlib) | File hashing and dedup hash computation |
+| Hashing | `crypto/sha256` (stdlib) | File hashing for upload tracking in learning data |
 | Testing | `testing` (stdlib) + `testify` | Standard Go testing with assertions |
 | Build | `go build` + `Makefile` | Simple, reproducible builds |
 | CI/CD | GitHub Actions | Cross-platform build matrix |

@@ -148,7 +148,27 @@ This folder contains detailed specifications for each component of the Tokenly s
 
 ---
 
-### 8. Update Distribution *(Planned)*
+### 8. Ingestion Post-Processor
+**File:** [`08-ingestion-post-processor-spec.md`](08-ingestion-post-processor-spec.md)
+**Purpose:** Background processor that parses and validates raw JSONL files stored during ingestion
+
+**Responsibilities:**
+- Pick up raw files with `pending` status from Token Storage Plugin
+- Parse JSONL content line by line
+- Validate records (required fields, field formats)
+- Enforce 50% validity threshold
+- Store valid records via `storeUsageRecords`
+- Track processing status (`processed` / `failed`) with detailed results
+- Update client statistics after processing
+
+**Key Interfaces:**
+- Token Storage Plugin (raw file retrieval, record storage)
+- Admin Storage Plugin (client statistics)
+- Timer/scheduler trigger
+
+---
+
+### 9. Update Distribution *(Planned)*
 **Purpose:** Binary versioning, building, and distribution system
 
 **Responsibilities:**

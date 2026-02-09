@@ -59,7 +59,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
 
 app.http('heartbeat', {
   methods: ['POST', 'OPTIONS'],
-  route: 'v1/heartbeat',
+  route: 'heartbeat',
   authLevel: 'anonymous',
   handler,
 });

@@ -80,7 +80,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
 
 app.http('authLogin', {
   methods: ['POST', 'OPTIONS'],
-  route: 'v1/auth/login',
+  route: 'auth/login',
   authLevel: 'anonymous',
   handler,
 });

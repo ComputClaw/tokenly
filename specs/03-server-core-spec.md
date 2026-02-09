@@ -69,8 +69,8 @@ Storage ←→ Backend:    In-memory / database / cloud storage
 
 ### Base URL Structure
 ```
-Production:   https://<your-server-host>/api/v1/
-Development:  http://localhost:7071/api/v1/
+Production:   https://<your-server-host>/api/
+Development:  http://localhost:7071/api/
 ```
 
 ### Authentication
@@ -84,7 +84,7 @@ Development:  http://localhost:7071/api/v1/
 
 ### 1. Client Registration & Heartbeat
 
-#### POST /api/v1/heartbeat
+#### POST /api/heartbeat
 **Purpose:** Client registration, status updates, and configuration retrieval
 
 **Request Headers:**
@@ -145,7 +145,7 @@ User-Agent: tokenly-launcher/1.0.0
     "enabled": true,
     "available": true,
     "version": "1.0.2",
-    "download_url": "/api/v1/download/worker/1.0.2/linux-x64",
+    "download_url": "/api/download/worker/1.0.2/linux-x64",
     "checksum": "sha256:abc123def456...",
     "required": false,
     "check_interval_hours": 24,
@@ -192,7 +192,7 @@ When a heartbeat request is received, the server:
 
 ### 2. Token Usage Data Ingestion
 
-#### POST /api/v1/ingest
+#### POST /api/ingest
 **Purpose:** Upload JSONL files containing token usage data
 
 **Request Headers:**
@@ -235,11 +235,9 @@ Content-Type: application/x-ndjson
 {
   "ingestion_id": "uuid-for-this-upload",
   "status": "accepted",
-  "records_processed": 1205,
-  "records_valid": 1203,
-  "records_invalid": 2,
-  "storage_backend": "database",
-  "processing_time_ms": 145
+  "file_size_bytes": 847392,
+  "line_count": 1205,
+  "message": "File accepted for processing"
 }
 ```
 
@@ -247,11 +245,7 @@ Content-Type: application/x-ndjson
 ```json
 {
   "error": "validation_failed",
-  "message": "Invalid JSONL format or missing required fields",
-  "details": {
-    "line": 15,
-    "error": "Missing required field: timestamp"
-  }
+  "message": "Missing required metadata field: client_hostname"
 }
 ```
 
@@ -260,28 +254,29 @@ Content-Type: application/x-ndjson
 {
   "error": "file_too_large",
   "message": "File size exceeds maximum allowed limit",
-  "max_size_mb": 10,
-  "actual_size_mb": 15
+  "max_size_mb": 50,
+  "actual_size_mb": 55
 }
 ```
 
 #### Ingestion Processing Behavior
 
 When an ingestion request is received:
-1. Verify the client is approved (look up by hostname or client ID header)
-2. Parse the multipart form data to extract metadata JSON and file bytes
-3. Validate file size against configured limits
-4. Parse the JSONL content line by line
-5. Validate each record (required fields: `timestamp`, `service`, `model`)
-6. Store valid records via the Token Storage Plugin
-7. Update client statistics (total uploads, total records, last upload time)
-8. Return ingestion result with record counts
+1. Parse the multipart form data to extract metadata JSON and file bytes
+2. Validate metadata fields (`client_hostname` required, `file_info` required with all sub-fields)
+3. Verify the client is approved (look up by hostname)
+4. Validate file size against configured limits
+5. Store the raw file bytes and metadata via the Token Storage Plugin (`storeRawFile`)
+6. Update client statistics (total uploads, last upload time)
+7. Return acceptance result — **the file content is not parsed at ingest time**
+
+Record parsing, validation, and storage happen asynchronously via the Ingestion Post-Processor. See [`08-ingestion-post-processor-spec.md`](08-ingestion-post-processor-spec.md).
 
 ---
 
 ### 3. Client Binary Updates
 
-#### GET /api/v1/download/worker/{version}/{platform}
+#### GET /api/download/worker/{version}/{platform}
 **Purpose:** Download worker binary updates
 
 **Parameters:**
@@ -314,7 +309,7 @@ X-Checksum-SHA256: abc123def456...
 
 ### Admin Authentication (JWT)
 
-#### POST /api/v1/auth/login
+#### POST /api/auth/login
 **Purpose:** Admin login with username/password
 
 **Request:**
@@ -343,7 +338,7 @@ X-Checksum-SHA256: abc123def456...
 Set-Cookie: refresh_token=<jwt_refresh_token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800
 ```
 
-#### POST /api/v1/auth/refresh
+#### POST /api/auth/refresh
 **Purpose:** Refresh expired access token using httpOnly refresh token
 
 **Request:** (No body, refresh token sent as httpOnly cookie)
@@ -357,7 +352,7 @@ Set-Cookie: refresh_token=<jwt_refresh_token>; HttpOnly; Secure; SameSite=Strict
 }
 ```
 
-#### POST /api/v1/auth/logout
+#### POST /api/auth/logout
 **Purpose:** Invalidate refresh token and clear cookie
 
 **Response (200 OK):**
@@ -378,7 +373,7 @@ Set-Cookie: refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0
 - **Refresh:** Read refresh token from cookie, validate it, generate new access token. This enables seamless session extension without re-login.
 - **Logout:** Invalidate the refresh token in storage, clear the cookie.
 - **JWT claims:** Include `username`, `role`, `permissions` array.
-- **Protected endpoints:** All `/api/v1/admin/*` endpoints require a valid JWT access token in the `Authorization: Bearer` header.
+- **Protected endpoints:** All `/api/admin/*` endpoints require a valid JWT access token in the `Authorization: Bearer` header.
 
 ---
 
@@ -386,7 +381,7 @@ Set-Cookie: refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0
 
 ### 1. Admin User Management
 
-#### GET /api/v1/admin/users
+#### GET /api/admin/users
 **Purpose:** List all admin users with their roles and status
 
 **Request Headers:**
@@ -413,7 +408,7 @@ Authorization: Bearer {admin_jwt_token}
 }
 ```
 
-#### POST /api/v1/admin/users
+#### POST /api/admin/users
 **Purpose:** Create a new admin user
 
 **Request:**
@@ -437,7 +432,7 @@ Authorization: Bearer {admin_jwt_token}
 }
 ```
 
-#### PUT /api/v1/admin/users/{username}/disable
+#### PUT /api/admin/users/{username}/disable
 **Purpose:** Disable an admin user
 
 **Response:**
@@ -449,7 +444,7 @@ Authorization: Bearer {admin_jwt_token}
 }
 ```
 
-#### PUT /api/v1/admin/users/{username}/password
+#### PUT /api/admin/users/{username}/password
 **Purpose:** Change user password (admin or self)
 
 **Request:**
@@ -464,7 +459,7 @@ Authorization: Bearer {admin_jwt_token}
 
 ### 2. Client Management
 
-#### GET /api/v1/admin/clients
+#### GET /api/admin/clients
 **Purpose:** List all registered clients with status
 
 **Request Headers:**
@@ -505,7 +500,7 @@ Authorization: Bearer {admin_api_key}
 }
 ```
 
-#### PUT /api/v1/admin/clients/{client_id}/approve
+#### PUT /api/admin/clients/{client_id}/approve
 **Purpose:** Approve a pending client
 
 **Request:**
@@ -526,7 +521,7 @@ Authorization: Bearer {admin_api_key}
 }
 ```
 
-#### DELETE /api/v1/admin/clients/{client_id}
+#### DELETE /api/admin/clients/{client_id}
 **Purpose:** Remove a client (reject and block future registrations)
 
 **Response:**
@@ -542,7 +537,7 @@ Authorization: Bearer {admin_api_key}
 
 ### 3. System Status
 
-#### GET /api/v1/admin/status
+#### GET /api/admin/status
 **Purpose:** Server health and operational metrics
 
 **Response:**
@@ -786,7 +781,7 @@ Handles high-volume token usage data, analytics queries, and retention policies.
 - **Pluggable storage** - Swap in persistent backends independently
 
 ### Monitoring & Metrics
-- **Admin status endpoint** - `/api/v1/admin/status` for operational metrics
+- **Admin status endpoint** - `/api/admin/status` for operational metrics
 - **Structured logging** - JSON log output throughout
 - **Performance Tracking** - Request duration tracked per endpoint
 - **Health checks** - Storage plugins expose health check operations
@@ -844,7 +839,7 @@ Regardless of framework, the server needs:
 
 ### Health Monitoring
 
-Storage plugins expose health checks called during startup. The `/api/v1/admin/status` endpoint provides operational health data including client counts, ingestion stats, and storage status.
+Storage plugins expose health checks called during startup. The `/api/admin/status` endpoint provides operational health data including client counts, ingestion stats, and storage status.
 
 ### Production Deployment Checklist
 - [ ] Server instance created and configured

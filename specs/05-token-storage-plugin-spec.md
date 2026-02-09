@@ -40,6 +40,9 @@ The Token Storage Plugin handles high-volume ingestion and analytics for AI toke
 | **InitializeAsync** | config (key-value map) | — | Connect to storage backend, create tables/indexes if needed | Connection failure, invalid config |
 | **HealthCheckAsync** | — | StorageHealth | Test connectivity and report backend status | Backend unreachable |
 | **CloseAsync** | — | — | Gracefully close connections and release resources | — |
+| **StoreRawFile** | clientId, metadata, fileContent (bytes) | RawFileResult | Store the raw JSONL file and its metadata for later processing; generate ingestion ID; set status to `pending` | Storage full, connection error |
+| **GetPendingRawFiles** | limit (integer, optional) | list of RawFile | Retrieve raw files with status `pending`, ordered by upload time (oldest first); limit defaults to 10 | — |
+| **UpdateRawFileStatus** | ingestionId, status, processingResult (optional) | — | Update the status of a raw file to `processing`, `processed`, or `failed`; attach processing result if provided | File not found |
 | **StoreUsageRecords** | clientId, list of UsageRecord | IngestionResult | Validate, deduplicate, and store records; set clientId and ingestedAt on each record; compute record hash for dedup | Validation failure, storage full, connection error |
 | **StoreUsageRecordsBatch** | list of ClientRecordBatch | BatchIngestionResult | Process multiple client batches (optionally in parallel with bounded concurrency); aggregate per-client results | Partial failure (per-client results reported) |
 | **QueryUsage** | UsageQuery | UsageQueryResult | Filter records by time range and criteria, apply grouping/aggregation, paginate results | Invalid query parameters |
@@ -143,6 +146,68 @@ The record hash is computed from the concatenation of: `timestamp | service | mo
 | `records_invalid` | integer | Records that failed validation |
 | `processing_time_ms` | integer | Time taken to process the batch |
 | `errors` | list of strings | Descriptions of any errors encountered |
+
+### Raw File
+
+Represents a raw JSONL file stored at ingest time, pending post-processing.
+
+```json
+{
+  "ingestion_id": "uuid-for-this-upload",
+  "client_id": "web-server-01",
+  "status": "pending",
+  "uploaded_at": "2026-02-09T09:46:00Z",
+  "metadata": {
+    "client_hostname": "web-server-01",
+    "collected_at": "2026-02-09T09:45:00Z",
+    "file_info": {
+      "original_path": "/var/log/openai/usage.jsonl",
+      "directory": "/var/log/openai/",
+      "filename": "usage.jsonl",
+      "size_bytes": 847392,
+      "modified_at": "2026-02-08T09:48:00Z",
+      "line_count": 1205
+    }
+  },
+  "file_content": "<raw bytes>",
+  "processing_result": null
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `ingestion_id` | string (UUID) | Unique identifier for this upload |
+| `client_id` | string | Client that uploaded this file |
+| `status` | string | One of: `pending`, `processing`, `processed`, `failed` |
+| `uploaded_at` | datetime | When the file was received |
+| `metadata` | object | The metadata JSON from the ingest request (client_hostname, collected_at, file_info) |
+| `file_content` | bytes | The raw JSONL file content |
+| `processing_result` | object or null | Set after post-processing; contains record counts and errors |
+
+**Processing result (set after post-processing):**
+```json
+{
+  "records_processed": 1205,
+  "records_stored": 1203,
+  "records_duplicate": 0,
+  "records_invalid": 2,
+  "processing_time_ms": 145,
+  "processed_at": "2026-02-09T09:50:00Z"
+}
+```
+
+### Raw File Result
+
+Returned by `StoreRawFile` at ingest time.
+
+```json
+{
+  "ingestion_id": "uuid-for-this-upload",
+  "status": "accepted",
+  "file_size_bytes": 847392,
+  "line_count": 1205
+}
+```
 
 ### Batch Ingestion Result
 

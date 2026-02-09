@@ -159,28 +159,28 @@ async function deleteClientHandler(request: HttpRequest, _context: InvocationCon
 
 app.http('adminClientsList', {
   methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/clients',
+  route: 'admin/clients',
   authLevel: 'anonymous',
   handler: listClientsHandler,
 });
 
 app.http('adminClientApprove', {
   methods: ['PUT', 'OPTIONS'],
-  route: 'v1/admin/clients/{clientId}/approve',
+  route: 'admin/clients/{clientId}/approve',
   authLevel: 'anonymous',
   handler: approveClientHandler,
 });
 
 app.http('adminClientReject', {
   methods: ['PUT', 'OPTIONS'],
-  route: 'v1/admin/clients/{clientId}/reject',
+  route: 'admin/clients/{clientId}/reject',
   authLevel: 'anonymous',
   handler: rejectClientHandler,
 });
 
 app.http('adminClientDelete', {
   methods: ['DELETE', 'OPTIONS'],
-  route: 'v1/admin/clients/{clientId}',
+  route: 'admin/clients/{clientId}',
   authLevel: 'anonymous',
   handler: deleteClientHandler,
 });

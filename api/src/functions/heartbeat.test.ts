@@ -78,7 +78,7 @@ async function invokeHandler(body: unknown): Promise<HttpResponse> {
   }
   const request = new HttpRequest({
     method: 'POST',
-    url: 'http://localhost/api/v1/heartbeat',
+    url: 'http://localhost/api/heartbeat',
     body: { string: JSON.stringify(body) },
     headers: { 'Content-Type': 'application/json' },
   });

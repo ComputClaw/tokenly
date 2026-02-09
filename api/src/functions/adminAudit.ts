@@ -57,7 +57,7 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
 
 app.http('adminAudit', {
   methods: ['GET', 'OPTIONS'],
-  route: 'v1/admin/audit',
+  route: 'admin/audit',
   authLevel: 'anonymous',
   handler,
 });

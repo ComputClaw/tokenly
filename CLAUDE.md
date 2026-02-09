@@ -54,6 +54,7 @@ Tokenly2/
 | `specs/05-token-storage-plugin-spec.md` | Token Storage Plugin - high-volume usage data and analytics |
 | `specs/06-admin-interface-spec.md` | Admin Interface - React SPA for management and analytics |
 | `specs/07-client-protocol-spec.md` | Client Protocol - language-agnostic interoperability contracts |
+| `specs/08-ingestion-post-processor-spec.md` | Ingestion Post-Processor - async JSONL parsing and validation |
 
 ## Implementation Scope
 
@@ -70,7 +71,7 @@ Tokenly2/
 ## Key Design Decisions
 
 - SWA serves static frontend files from CDN (no function invocations for HTML/JS/CSS)
-- `/api/v1/*` routes to Azure Functions backend automatically
+- `/api/*` routes to Azure Functions backend automatically
 - SPA fallback routing handled by SWA
 - Storage plugins wired via dependency injection; in-memory for development, swappable to persistent backends later
 - JWT authentication with httpOnly refresh cookies for admin interface
