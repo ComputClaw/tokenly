@@ -14,6 +14,8 @@ import {
 } from 'chart.js';
 import MetricCard from '../components/common/MetricCard.tsx';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
+import Card from '../components/ui/Card.tsx';
+import { Select } from '../components/ui/Input.tsx';
 import type { AnalyticsSummary, TrendData, TopUsageResult, CostBreakdown } from '../types/api.ts';
 import * as api from '../services/api-client.ts';
 
@@ -121,15 +123,15 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-        <select
+        <Select
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
-          className="px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+          compact
         >
           {periods.map((p) => (
             <option key={p.value} value={p.value}>{p.label}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -138,35 +140,35 @@ export default function AnalyticsPage() {
         <MetricCard title="Total Requests" value={summary?.total_requests.toLocaleString() ?? '0'} color="yellow" />
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Usage Trend</h2>
         {trendPoints.length > 0 ? (
           <Line data={trendChart} options={trendOptions} />
         ) : (
           <p className="text-gray-500 text-sm">No data available</p>
         )}
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Services</h2>
           {serviceRankings.length > 0 ? (
             <Bar data={servicesChart} options={barOptions} />
           ) : (
             <p className="text-gray-500 text-sm">No data available</p>
           )}
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        </Card>
+        <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Models</h2>
           {modelRankings.length > 0 ? (
             <Bar data={modelsChart} options={barOptions} />
           ) : (
             <p className="text-gray-500 text-sm">No data available</p>
           )}
-        </div>
+        </Card>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="p-6 pb-3">
           <h2 className="text-lg font-semibold text-gray-900">Cost Breakdown</h2>
         </div>
@@ -198,7 +200,7 @@ export default function AnalyticsPage() {
             </table>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

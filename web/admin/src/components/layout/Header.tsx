@@ -1,4 +1,5 @@
 import { useAuth } from '../../contexts/AuthContext.tsx';
+import Button from '../ui/Button.tsx';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -23,12 +24,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
       <div className="flex items-center gap-4">
         <span className="text-sm text-gray-600">{user?.username}</span>
-        <button
-          onClick={logout}
-          className="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors"
-        >
+        <Button variant="ghost" size="sm" onClick={logout}>
           Logout
-        </button>
+        </Button>
       </div>
     </header>
   );

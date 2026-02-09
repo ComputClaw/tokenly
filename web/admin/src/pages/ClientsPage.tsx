@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import StatusBadge from '../components/common/StatusBadge.tsx';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
+import Button from '../components/ui/Button.tsx';
+import Card from '../components/ui/Card.tsx';
+import Input from '../components/ui/Input.tsx';
+import { Textarea } from '../components/ui/Input.tsx';
+import Modal from '../components/ui/Modal.tsx';
 import { formatRelative } from '../utils/formatRelative.ts';
 import type { Client, ClientListResponse } from '../types/api.ts';
 import * as api from '../services/api-client.ts';
@@ -90,16 +95,16 @@ export default function ClientsPage() {
             </button>
           ))}
         </div>
-        <input
+        <Input
           type="text"
           placeholder="Search hostname..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+          compact
         />
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <Card className="overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner />
@@ -136,7 +141,7 @@ export default function ClientsPage() {
             </table>
           </div>
         )}
-      </div>
+      </Card>
 
       {selectedClient && (
         <ClientDetailModal
@@ -168,18 +173,7 @@ function ClientDetailModal({
   const modalTitleId = `client-detail-title-${client.client_id}`;
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4"
-      onClick={onClose}
-      aria-label="Close modal"
-    >
-      <div
-        className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={modalTitleId}
-      >
+    <Modal onClose={onClose} labelledBy={modalTitleId} maxWidth="lg" className="max-h-[90vh] overflow-y-auto">
         <div className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 id={modalTitleId} className="text-lg font-bold text-gray-900">{client.hostname}</h2>
@@ -240,13 +234,13 @@ function ClientDetailModal({
               <label htmlFor="approval-notes" className="block text-sm font-medium text-gray-500 mb-1">
                 Approval Notes
               </label>
-              <textarea
+              <Textarea
                 id="approval-notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Optional notes for approval..."
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 resize-none"
+                className="w-full resize-none"
               />
             </div>
           )}
@@ -254,29 +248,19 @@ function ClientDetailModal({
           <div className="flex gap-2 pt-2 border-t border-gray-200">
             {client.status === 'pending' && (
               <>
-                <button
-                  onClick={() => onApprove(client.client_id, notes || undefined)}
-                  className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors"
-                >
+                <Button variant="success" onClick={() => onApprove(client.client_id, notes || undefined)}>
                   Approve
-                </button>
-                <button
-                  onClick={() => onReject(client.client_id)}
-                  className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
-                >
+                </Button>
+                <Button variant="danger" onClick={() => onReject(client.client_id)}>
                   Reject
-                </button>
+                </Button>
               </>
             )}
-            <button
-              onClick={() => onDelete(client.client_id)}
-              className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors ml-auto"
-            >
+            <Button variant="secondary" onClick={() => onDelete(client.client_id)} className="ml-auto">
               Delete
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

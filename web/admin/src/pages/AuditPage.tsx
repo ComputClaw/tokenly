@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
+import Button from '../components/ui/Button.tsx';
+import Card from '../components/ui/Card.tsx';
 import type { AuditEntry } from '../types/api.ts';
 import * as api from '../services/api-client.ts';
 
@@ -31,7 +33,7 @@ export default function AuditPage() {
 
       {error && <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">{error}</div>}
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <Card className="overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner />
@@ -74,24 +76,26 @@ export default function AuditPage() {
               Page {page} of {totalPages} ({total} entries)
             </span>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 text-gray-700"
               >
                 Previous
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 text-gray-700"
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

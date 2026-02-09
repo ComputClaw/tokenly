@@ -1,4 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react';
+import Button from '../ui/Button.tsx';
 
 interface Props {
   children: ReactNode;
@@ -45,12 +46,9 @@ export default class ErrorBoundary extends Component<Props, State> {
                   <pre className="mt-2 overflow-x-auto">{this.state.error.message}</pre>
                 </details>
               )}
-              <button
-                onClick={() => window.location.reload()}
-                className="mt-4 w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-              >
+              <Button onClick={() => window.location.reload()} className="mt-4 w-full">
                 Reload Page
-              </button>
+              </Button>
             </div>
           </div>
         )

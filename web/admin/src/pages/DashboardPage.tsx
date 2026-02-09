@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import MetricCard from '../components/common/MetricCard.tsx';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
+import Card from '../components/ui/Card.tsx';
 import type { SystemStatus, TrendData } from '../types/api.ts';
 import * as api from '../services/api-client.ts';
 
@@ -84,17 +85,17 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Usage Trend</h2>
         {dataPoints.length > 0 ? (
           <Line data={chartData} options={chartOptions} />
         ) : (
           <p className="text-gray-500 text-sm">No trend data available</p>
         )}
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Server Info</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
@@ -110,9 +111,9 @@ export default function DashboardPage() {
               <dd className="text-gray-900 font-medium">{status?.server.memory_usage_mb} MB</dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Ingestion Today</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
@@ -132,7 +133,7 @@ export default function DashboardPage() {
               <dd className="text-gray-900 font-medium">{status?.ingestion.errors_today}</dd>
             </div>
           </dl>
-        </div>
+        </Card>
       </div>
     </div>
   );

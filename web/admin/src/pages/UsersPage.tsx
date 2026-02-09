@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef, type FormEvent } from 'react';
 import StatusBadge from '../components/common/StatusBadge.tsx';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
+import Button from '../components/ui/Button.tsx';
+import Card from '../components/ui/Card.tsx';
+import Input from '../components/ui/Input.tsx';
+import { Select } from '../components/ui/Input.tsx';
+import Modal from '../components/ui/Modal.tsx';
 import { formatRelative } from '../utils/formatRelative.ts';
 import type { AdminUser } from '../types/api.ts';
 import * as api from '../services/api-client.ts';
@@ -42,17 +47,14 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-        >
+        <Button onClick={() => setShowAddForm(true)}>
           Add User
-        </button>
+        </Button>
       </div>
 
       {error && <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">{error}</div>}
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <Card className="overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner />
@@ -98,7 +100,7 @@ export default function UsersPage() {
             </table>
           </div>
         )}
-      </div>
+      </Card>
 
       {showAddForm && (
         <AddUserModal
@@ -151,85 +153,69 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4" onClick={onClose} aria-label="Close modal">
-      <div
-        className="bg-white rounded-lg shadow-xl max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="add-user-title"
-      >
+    <Modal onClose={onClose} labelledBy="add-user-title">
         <div className="p-6">
           <h2 id="add-user-title" className="text-lg font-bold text-gray-900 mb-4">Create Admin User</h2>
           {error && <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="new-username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-              <input
+              <Input
                 id="new-username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full"
               />
             </div>
             <div>
               <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
+              <Input
                 id="new-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={12}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full"
               />
             </div>
             <div>
               <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-              <input
+              <Input
                 id="confirm-password"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full"
               />
             </div>
             <div>
               <label htmlFor="user-role" className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-              <select
+              <Select
                 id="user-role"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="w-full"
               >
                 <option value="super_admin">Super Admin</option>
                 <option value="client_manager">Client Manager</option>
                 <option value="viewer">Viewer</option>
-              </select>
+              </Select>
             </div>
             <div className="flex gap-3 pt-2">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
-              >
+              <Button type="submit" disabled={submitting}>
                 {submitting ? 'Creating...' : 'Create User'}
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors"
-              >
+              </Button>
+              <Button type="button" variant="secondary" onClick={onClose}>
                 Cancel
-              </button>
+              </Button>
             </div>
           </form>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -273,14 +259,7 @@ function ChangePasswordModal({ username, onClose }: { username: string; onClose:
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4" onClick={onClose} aria-label="Close modal">
-      <div
-        className="bg-white rounded-lg shadow-xl max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="change-password-title"
-      >
+    <Modal onClose={onClose} labelledBy="change-password-title">
         <div className="p-6">
           <h2 id="change-password-title" className="text-lg font-bold text-gray-900 mb-4">Change Password: {username}</h2>
           {error && <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">{error}</div>}
@@ -288,23 +267,22 @@ function ChangePasswordModal({ username, onClose }: { username: string; onClose:
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="new-pw" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-              <input id="new-pw" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={12} className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" />
+              <Input id="new-pw" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={12} className="w-full" />
             </div>
             <div>
               <label htmlFor="confirm-new-pw" className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-              <input id="confirm-new-pw" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900" />
+              <Input id="confirm-new-pw" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="w-full" />
             </div>
             <div className="flex gap-3 pt-2">
-              <button type="submit" disabled={submitting} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              <Button type="submit" disabled={submitting}>
                 {submitting ? 'Changing...' : 'Change Password'}
-              </button>
-              <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors">
+              </Button>
+              <Button type="button" variant="secondary" onClick={onClose}>
                 Cancel
-              </button>
+              </Button>
             </div>
           </form>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

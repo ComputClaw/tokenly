@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner.tsx';
+import Button from '../components/ui/Button.tsx';
+import Input from '../components/ui/Input.tsx';
+import { Select } from '../components/ui/Input.tsx';
 import * as api from '../services/api-client.ts';
 
 interface ConfigValues {
@@ -109,20 +112,12 @@ export default function ConfigPage() {
         </Section>
 
         <div className="p-6 flex gap-3">
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
+          <Button type="submit" disabled={saving}>
             {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors"
-          >
+          </Button>
+          <Button type="button" variant="secondary" onClick={handleReset}>
             Reset to Defaults
-          </button>
+          </Button>
         </div>
       </form>
     </div>
@@ -142,11 +137,12 @@ function NumberField({ label, value, onChange }: { label: string; value: number;
   return (
     <div className="flex items-center justify-between">
       <label className="text-sm text-gray-700">{label}</label>
-      <input
+      <Input
         type="number"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-28 px-3 py-1.5 border border-gray-300 rounded-md text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+        compact
+        className="w-28 text-right"
       />
     </div>
   );
@@ -174,15 +170,16 @@ function SelectField({ label, value, options, onChange }: { label: string; value
   return (
     <div className="flex items-center justify-between">
       <label className="text-sm text-gray-700">{label}</label>
-      <select
+      <Select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-28 px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+        compact
+        className="w-28"
       >
         {options.map((opt) => (
           <option key={opt} value={opt}>{opt}</option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 }
