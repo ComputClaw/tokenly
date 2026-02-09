@@ -1,5 +1,5 @@
 import {
-  AdminUser, AdminUserCreate, AdminUserUpdate,
+  User, UserCreate, UserUpdate,
   ClientInfo, ClientRegistration, ClientFilter, ClientList, ClientStatus,
   ClientConfig, ClientConfigOverride,
   ConfigValue,
@@ -13,17 +13,17 @@ export interface IAdminStoragePlugin {
   healthCheck(): Promise<void>;
   close(): Promise<void>;
 
-  // Admin Users
-  createAdminUser(input: AdminUserCreate): Promise<AdminUser>;
-  getAdminUser(username: string): Promise<AdminUser | null>;
-  getAdminUserById(userId: string): Promise<AdminUser | null>;
-  listAdminUsers(): Promise<AdminUser[]>;
-  updateAdminUser(username: string, updates: AdminUserUpdate): Promise<void>;
-  setAdminUserPassword(username: string, passwordHash: string, updatedBy: string): Promise<void>;
-  disableAdminUser(username: string, disabledBy: string): Promise<void>;
-  enableAdminUser(username: string, enabledBy: string): Promise<void>;
-  deleteAdminUser(username: string, deletedBy: string): Promise<void>;
-  validatePassword(username: string, password: string): Promise<AdminUser | null>;
+  // Users
+  createUser(input: UserCreate): Promise<User>;
+  getUser(username: string): Promise<User | null>;
+  getUserById(userId: string): Promise<User | null>;
+  listUsers(): Promise<User[]>;
+  updateUser(username: string, updates: UserUpdate): Promise<void>;
+  setUserPassword(username: string, passwordHash: string, updatedBy: string): Promise<void>;
+  disableUser(username: string, disabledBy: string): Promise<void>;
+  enableUser(username: string, enabledBy: string): Promise<void>;
+  deleteUser(username: string, deletedBy: string): Promise<void>;
+  validatePassword(username: string, password: string): Promise<User | null>;
 
   // Client Management
   registerClient(registration: ClientRegistration): Promise<ClientInfo>;

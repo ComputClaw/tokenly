@@ -16,10 +16,22 @@
 - **Hosting**: Azure Static Web Apps (SWA) with managed API
 - **Backend**: Azure Functions v4, Node.js programming model v4, TypeScript, Node.js 22
 - **Frontend**: React + Vite + Tailwind CSS + Chart.js
-- **Storage**: In-memory for both plugins (for now)
+- **Storage**: Azure Table Storage for admin plugin, in-memory for token plugin (for now)
 - **Package manager**: npm
 - **Testing**: Jest
 - **User rejected**: Serving static files via Azure Function catch-all (wasteful invocations) — SWA is the right approach
+
+## Azure Functions Gotchas
+- **`admin` is a reserved route/name prefix** — Azure Functions blocks any function name or route starting with `admin` (including `administration`). Use `manage/` for routes and `mgmt*` for function registration names instead.
+- Port 7071 TIME_WAIT: after stopping `func`, the port may stay in TIME_WAIT for ~30s. Wait before restarting.
+
+## Azure Table Storage Notes
+- `#` character is **not allowed** in partition/row keys — use `~` (tilde) as separator
+- System `timestamp` property overwrites domain fields — use `audit_ts` and map back
+- `TableTransaction.deleteEntity(partitionKey, rowKey)` — partitionKey is first arg
+- Range queries with `~` separator: upper bound increments prefix char (e.g., `name~` to `namf`)
+- `TableEntityQueryOptions` has `filter` and `select` only — no `top` property
+- Azurite: run with `npx azurite`, not `azurite-table`
 
 ## Project Layout
 - `api/` → Azure Functions (SWA managed API)

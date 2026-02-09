@@ -19,7 +19,7 @@ The Admin Interface is a modern web application that provides administrators wit
 2. **System Monitoring** - Real-time status dashboard and health metrics
 3. **Configuration Management** - Modify system settings and client overrides
 4. **Usage Analytics** - Token usage trends, cost analysis, reporting
-5. **User Management** - Admin accounts, API keys, permissions (future)
+5. **User Management** - User accounts, API keys, permissions (future)
 
 ### Secondary Functions
 6. **Audit Trail Viewing** - Browse administrative action history
@@ -86,9 +86,9 @@ Dashboard           - System overview and health status
 │   ├── Clients     - Per-client configuration overrides
 │   └── Advanced    - Rate limits, storage, etc.
 ├── Audit           - Administrative action history
-├── Users           - Admin user management
-│   ├── Active      - Current admin users and permissions
-│   ├── Add User    - Create new admin accounts
+├── Users           - User management
+│   ├── Active      - Current users and permissions
+│   ├── Add User    - Create new accounts
 │   └── Roles       - Permission management
 └── Settings        - User preferences, API keys, etc.
 ```
@@ -155,7 +155,7 @@ Error Rate:         0.3%         (Acceptable)
 #### 2.2 Client Details Modal/Page
 ```
 ┌─ Client: web-server-01 ──────────────────────────────────────────┐
-│ Status: Active (Approved by admin_user on 2026-02-08)            │
+│ Status: Active (Approved by user on 2026-02-08)            │
 │                                                                  │
 │ System Information:                                              │
 │   OS: Linux (Ubuntu 24.04)                                       │
@@ -322,13 +322,13 @@ Error Rate:         0.3%         (Acceptable)
 
 ### 5. User Management
 
-#### 5.1 Admin Users Overview
+#### 5.1 Users Overview
 ```
-┌─ Admin Users ────────────────────────────────────────────────────┐
+┌─ Users ────────────────────────────────────────────────────┐
 │ [Add User +] [Bulk Actions v]                                    │
 ├──────────────────────────────────────────────────────────────────┤
 │ Username      │ Role         │ Last Login │ Status   │ Actions   │
-│ admin_user    │ SuperAdmin   │ 5m ago     │ Active   │ [Edit]    │
+│ user          │ SuperAdmin   │ 5m ago     │ Active   │ [Edit]    │
 │ bob_admin     │ ClientManager│ 2h ago     │ Active   │ [Edit]    │
 │ jane_readonly │ Viewer       │ 1d ago     │ Active   │ [Edit]    │
 │ old_admin     │ SuperAdmin   │ 30d ago    │ Disabled │ [Enable]  │
@@ -340,7 +340,7 @@ Error Rate:         0.3%         (Acceptable)
 SuperAdmin:
   Client Management: Approve, reject, delete, configure
   Configuration: Read, write, delete all settings
-  User Management: Create, edit, delete admin users
+  User Management: Create, edit, delete users
   Audit Access: View all administrative actions
   System Control: Restart services, manage updates
 
@@ -359,7 +359,7 @@ Viewer:
 
 #### 5.2 Add/Edit User Modal
 ```
-┌─ Create Admin User ──────────────────────────────────────────────┐
+┌─ Create User ──────────────────────────────────────────────┐
 │                                                                  │
 │ Username: [bob_admin________________] (must be unique)           │
 │ Password: [************************] (min 12 chars, complex)     │
@@ -370,7 +370,7 @@ Viewer:
 │ Permissions (based on role):                                     │
 │  [x] Approve/reject clients                                     │
 │  [x] Configure client settings                                  │
-│  [ ] Create admin users                                          │
+│  [ ] Create users                                                │
 │  [ ] Modify system configuration                                 │
 │                                                                  │
 │ [Cancel] [Create User]                                           │
@@ -406,9 +406,9 @@ Viewer:
 │ Filters: [All Actions v] [All Users v] [Last 7 Days v]          │
 │                                                                  │
 │ Timestamp           │ User        │ Action         │ Resource    │
-│ 2026-02-09 09:45:23 │ admin_user  │ Client Approve │ web-srv-01  │
-│ 2026-02-09 09:30:15 │ admin_user  │ Config Set     │ scan_interval│
-│ 2026-02-09 08:15:47 │ admin_user  │ Client Reject  │ suspicious-vm│
+│ 2026-02-09 09:45:23 │ user        │ Client Approve │ web-srv-01  │
+│ 2026-02-09 09:30:15 │ user        │ Config Set     │ scan_interval│
+│ 2026-02-09 08:15:47 │ user        │ Client Reject  │ suspicious-vm│
 │ 2026-02-08 16:20:11 │ admin_bob   │ Admin Login    │ system      │
 │                                                                  │
 │ [View Details] [Export Log] [Download CSV]                       │
@@ -459,16 +459,16 @@ The API client service wraps all server communication:
 
 | API Operation | Method | Endpoint | Description |
 |---------------|--------|----------|-------------|
-| Get clients | POST | `/admin/clients` | List clients with filter criteria |
-| Approve client | PUT | `/admin/clients/{id}/approve` | Approve a pending client (with optional notes) |
-| Reject client | PUT | `/admin/clients/{id}/reject` | Reject a pending client |
-| Get system status | GET | `/admin/status` | Current system health and metrics |
-| Get config | GET | `/admin/config/{key}` | Read a configuration value |
-| Set config | PUT | `/admin/config/{key}` | Update a configuration value |
-| Get admin users | GET | `/admin/users` | List all admin users |
-| Create admin user | POST | `/admin/users` | Create a new admin account |
-| Update user status | PUT | `/admin/users/{username}/{enable\|disable}` | Enable or disable a user |
-| Change password | PUT | `/admin/users/{username}/password` | Change user password (requires current password) |
+| Get clients | POST | `/manage/clients` | List clients with filter criteria |
+| Approve client | PUT | `/manage/clients/{id}/approve` | Approve a pending client (with optional notes) |
+| Reject client | PUT | `/manage/clients/{id}/reject` | Reject a pending client |
+| Get system status | GET | `/manage/status` | Current system health and metrics |
+| Get config | GET | `/manage/config/{key}` | Read a configuration value |
+| Set config | PUT | `/manage/config/{key}` | Update a configuration value |
+| Get users | GET | `/manage/users` | List all users |
+| Create user | POST | `/manage/users` | Create a new account |
+| Update user status | PUT | `/manage/users/{username}/{enable\|disable}` | Enable or disable a user |
+| Change password | PUT | `/manage/users/{username}/password` | Change user password (requires current password) |
 
 **Error handling behavior:**
 - 401 responses trigger automatic token refresh and retry
@@ -502,7 +502,7 @@ The application maintains several state stores:
 | **Auth** | Current user, authentication status, permissions | Login, logout, token refresh |
 | **Clients** | Client list, current filter, loading state, error state | API fetch, WebSocket events, filter changes |
 | **Config** | Configuration items, loading state, unsaved changes flag | API fetch, user edits, save actions |
-| **Users** | Admin user list, loading state, error state | API fetch, create/update/delete actions |
+| **Users** | User list, loading state, error state | API fetch, create/update/delete actions |
 | **UI** | Sidebar open/closed, notifications list, current page | User navigation, WebSocket events |
 
 **Derived state examples:**
@@ -608,7 +608,7 @@ App
 ### Authentication & Authorization
 
 #### Admin Authentication (JWT + Admin Storage Backend)
-- **Admin user storage** - Users stored in admin storage plugin (same as client registry)
+- **User storage** - Users stored in admin storage plugin (same as client registry)
 - **Password hashing** - bcrypt/scrypt with secure salt and work factor
 - **JWT tokens** - Stateless authentication with role/permission claims
 - **HttpOnly refresh cookies** - Secure token storage (XSS protection)
@@ -688,7 +688,7 @@ App
 | Client approval workflow | Navigate to pending, approve a client | Client moves to active list, success message shown |
 | Login and navigation | Log in, navigate to each main page | All pages render without errors |
 | Configuration change | Modify a setting, save | Setting persisted, confirmation shown |
-| User creation | Create a new admin user | User appears in users list with correct role |
+| User creation | Create a new user | User appears in users list with correct role |
 | Audit trail | Perform an action, check audit page | Action appears in audit log |
 
 ### API Integration Testing

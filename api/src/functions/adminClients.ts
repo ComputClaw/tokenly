@@ -157,30 +157,30 @@ async function deleteClientHandler(request: HttpRequest, _context: InvocationCon
   }
 }
 
-app.http('adminClientsList', {
+app.http('mgmtClientsList', {
   methods: ['GET', 'OPTIONS'],
-  route: 'admin/clients',
+  route: 'manage/clients',
   authLevel: 'anonymous',
   handler: listClientsHandler,
 });
 
-app.http('adminClientApprove', {
+app.http('mgmtClientApprove', {
   methods: ['PUT', 'OPTIONS'],
-  route: 'admin/clients/{clientId}/approve',
+  route: 'manage/clients/{clientId}/approve',
   authLevel: 'anonymous',
   handler: approveClientHandler,
 });
 
-app.http('adminClientReject', {
+app.http('mgmtClientReject', {
   methods: ['PUT', 'OPTIONS'],
-  route: 'admin/clients/{clientId}/reject',
+  route: 'manage/clients/{clientId}/reject',
   authLevel: 'anonymous',
   handler: rejectClientHandler,
 });
 
-app.http('adminClientDelete', {
+app.http('mgmtClientDelete', {
   methods: ['DELETE', 'OPTIONS'],
-  route: 'admin/clients/{clientId}',
+  route: 'manage/clients/{clientId}',
   authLevel: 'anonymous',
   handler: deleteClientHandler,
 });

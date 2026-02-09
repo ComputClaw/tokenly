@@ -30,9 +30,9 @@ async function handler(request: HttpRequest, _context: InvocationContext): Promi
   }
 }
 
-app.http('adminStatus', {
+app.http('mgmtStatus', {
   methods: ['GET', 'OPTIONS'],
-  route: 'admin/status',
+  route: 'manage/status',
   authLevel: 'anonymous',
   handler,
 });

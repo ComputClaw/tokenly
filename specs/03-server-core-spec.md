@@ -315,7 +315,7 @@ X-Checksum-SHA256: abc123def456...
 **Request:**
 ```json
 {
-  "username": "admin_user",
+  "username": "user",
   "password": "secure_password"
 }
 ```
@@ -327,7 +327,7 @@ X-Checksum-SHA256: abc123def456...
   "token_type": "Bearer",
   "expires_in": 900,
   "user": {
-    "username": "admin_user",
+    "username": "user",
     "permissions": ["client_manage", "config_write", "audit_read"]
   }
 }
@@ -373,16 +373,16 @@ Set-Cookie: refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0
 - **Refresh:** Read refresh token from cookie, validate it, generate new access token. This enables seamless session extension without re-login.
 - **Logout:** Invalidate the refresh token in storage, clear the cookie.
 - **JWT claims:** Include `username`, `role`, `permissions` array.
-- **Protected endpoints:** All `/api/admin/*` endpoints require a valid JWT access token in the `Authorization: Bearer` header.
+- **Protected endpoints:** All `/api/manage/*` endpoints require a valid JWT access token in the `Authorization: Bearer` header.
 
 ---
 
 ## Administrative API Endpoints
 
-### 1. Admin User Management
+### 1. User Management
 
-#### GET /api/admin/users
-**Purpose:** List all admin users with their roles and status
+#### GET /api/manage/users
+**Purpose:** List all users with their roles and status
 
 **Request Headers:**
 ```http
@@ -395,7 +395,7 @@ Authorization: Bearer {admin_jwt_token}
   "users": [
     {
       "user_id": "uuid-123",
-      "username": "admin_user",
+      "username": "user",
       "role": "super_admin",
       "permissions": ["client:approve", "config:write", "user:create"],
       "enabled": true,
@@ -408,8 +408,8 @@ Authorization: Bearer {admin_jwt_token}
 }
 ```
 
-#### POST /api/admin/users
-**Purpose:** Create a new admin user
+#### POST /api/manage/users
+**Purpose:** Create a new user
 
 **Request:**
 ```json
@@ -432,8 +432,8 @@ Authorization: Bearer {admin_jwt_token}
 }
 ```
 
-#### PUT /api/admin/users/{username}/disable
-**Purpose:** Disable an admin user
+#### PUT /api/manage/users/{username}/disable
+**Purpose:** Disable a user
 
 **Response:**
 ```json
@@ -444,7 +444,7 @@ Authorization: Bearer {admin_jwt_token}
 }
 ```
 
-#### PUT /api/admin/users/{username}/password
+#### PUT /api/manage/users/{username}/password
 **Purpose:** Change user password (admin or self)
 
 **Request:**
@@ -459,7 +459,7 @@ Authorization: Bearer {admin_jwt_token}
 
 ### 2. Client Management
 
-#### GET /api/admin/clients
+#### GET /api/manage/clients
 **Purpose:** List all registered clients with status
 
 **Request Headers:**
@@ -500,7 +500,7 @@ Authorization: Bearer {admin_api_key}
 }
 ```
 
-#### PUT /api/admin/clients/{client_id}/approve
+#### PUT /api/manage/clients/{client_id}/approve
 **Purpose:** Approve a pending client
 
 **Request:**
@@ -517,11 +517,11 @@ Authorization: Bearer {admin_api_key}
   "client_id": "uuid-1",
   "status": "approved",
   "approved_at": "2026-02-09T09:48:00Z",
-  "approved_by": "admin_user"
+  "approved_by": "user"
 }
 ```
 
-#### DELETE /api/admin/clients/{client_id}
+#### DELETE /api/manage/clients/{client_id}
 **Purpose:** Remove a client (reject and block future registrations)
 
 **Response:**
@@ -537,7 +537,7 @@ Authorization: Bearer {admin_api_key}
 
 ### 3. System Status
 
-#### GET /api/admin/status
+#### GET /api/manage/status
 **Purpose:** Server health and operational metrics
 
 **Response:**
@@ -691,7 +691,7 @@ Storage is split into two plugin interfaces, wired via dependency injection at s
 
 ### Admin Storage Plugin
 
-Handles client registry, admin users, system configuration, and audit logs. See [04-admin-storage-plugin-spec.md](04-admin-storage-plugin-spec.md) for the full operation table and data models.
+Handles client registry, users, system configuration, and audit logs. See [04-admin-storage-plugin-spec.md](04-admin-storage-plugin-spec.md) for the full operation table and data models.
 
 ### Token Storage Plugin
 
@@ -781,7 +781,7 @@ Handles high-volume token usage data, analytics queries, and retention policies.
 - **Pluggable storage** - Swap in persistent backends independently
 
 ### Monitoring & Metrics
-- **Admin status endpoint** - `/api/admin/status` for operational metrics
+- **Admin status endpoint** - `/api/manage/status` for operational metrics
 - **Structured logging** - JSON log output throughout
 - **Performance Tracking** - Request duration tracked per endpoint
 - **Health checks** - Storage plugins expose health check operations
@@ -839,7 +839,7 @@ Regardless of framework, the server needs:
 
 ### Health Monitoring
 
-Storage plugins expose health checks called during startup. The `/api/admin/status` endpoint provides operational health data including client counts, ingestion stats, and storage status.
+Storage plugins expose health checks called during startup. The `/api/manage/status` endpoint provides operational health data including client counts, ingestion stats, and storage status.
 
 ### Production Deployment Checklist
 - [ ] Server instance created and configured
@@ -850,7 +850,7 @@ Storage plugins expose health checks called during startup. The `/api/admin/stat
 - [ ] Monitoring/logging enabled
 - [ ] CI/CD pipeline configured
 - [ ] Backup strategy implemented for persistent storage
-- [ ] Default admin user created
+- [ ] Default user created
 
 ---
 

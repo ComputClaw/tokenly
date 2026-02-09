@@ -48,7 +48,7 @@ export interface ClientListResponse {
   };
 }
 
-export interface AdminUser {
+export interface User {
   user_id: string;
   username: string;
   role: string;
@@ -59,8 +59,8 @@ export interface AdminUser {
   must_change_password: boolean;
 }
 
-export interface AdminUserListResponse {
-  users: AdminUser[];
+export interface UserListResponse {
+  users: User[];
   total: number;
 }
 
