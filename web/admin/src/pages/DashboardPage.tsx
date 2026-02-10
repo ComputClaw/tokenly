@@ -43,8 +43,8 @@ export default function DashboardPage() {
       {
         label: trend?.metric ?? 'Cost',
         data: dataPoints.map((d) => d.value),
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderColor: 'rgb(99, 102, 241)',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
         fill: true,
         tension: 0.3,
       },

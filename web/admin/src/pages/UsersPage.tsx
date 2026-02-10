@@ -64,13 +64,13 @@ export default function UsersPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-800/50 border-b border-gray-800">
+              <thead className="bg-gray-800/30 border-b border-gray-700/40">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Username</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Role</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Last Login</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Username</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Role</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Last Login</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-right font-medium text-gray-500 text-xs uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
@@ -83,13 +83,13 @@ export default function UsersPage() {
                     <td className="px-4 py-3 text-right space-x-2">
                       <button
                         onClick={() => handleToggleStatus(user)}
-                        className="text-sm text-gray-400 hover:text-gray-200"
+                        className="text-sm text-gray-400 hover:text-indigo-400 transition-colors duration-150"
                       >
                         {user.enabled ? 'Disable' : 'Enable'}
                       </button>
                       <button
                         onClick={() => setChangePasswordUser(user.username)}
-                        className="text-sm text-gray-400 hover:text-gray-200"
+                        className="text-sm text-gray-400 hover:text-indigo-400 transition-colors duration-150"
                       >
                         Password
                       </button>

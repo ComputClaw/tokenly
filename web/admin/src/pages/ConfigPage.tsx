@@ -88,7 +88,7 @@ export default function ConfigPage() {
         </div>
       )}
 
-      <form onSubmit={handleSave} className="bg-gray-900 rounded-lg border border-gray-800 divide-y divide-gray-800">
+      <form onSubmit={handleSave} className="bg-gray-900/80 rounded-xl border border-gray-700/40 shadow-lg shadow-black/25 divide-y divide-gray-800/50">
         <Section title="Scanning Behavior">
           <Toggle label="Scan Enabled" checked={config.scan_enabled} onChange={(v) => setConfig((c) => ({ ...c, scan_enabled: v }))} />
           <NumberField label="Scan Interval (minutes)" value={config.scan_interval_minutes} onChange={(v) => setConfig((c) => ({ ...c, scan_interval_minutes: v }))} />
@@ -158,7 +158,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
         aria-checked={checked}
         aria-label={label}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${checked ? 'bg-blue-600' : 'bg-gray-700'}`}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ${checked ? 'bg-indigo-600 shadow-lg shadow-indigo-500/25' : 'bg-gray-700'}`}
       >
         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${checked ? 'translate-x-6' : 'translate-x-1'}`} />
       </button>

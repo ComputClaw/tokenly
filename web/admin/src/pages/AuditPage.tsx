@@ -43,7 +43,7 @@ export default function AuditPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-800/50 border-b border-gray-800">
+              <thead className="bg-gray-800/30 border-b border-gray-700/40">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Timestamp</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">User</th>
@@ -71,7 +71,7 @@ export default function AuditPage() {
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-800">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-700/40">
             <span className="text-sm text-gray-500">
               Page {page} of {totalPages} ({total} entries)
             </span>

@@ -27,7 +27,7 @@ const periods = [
   { value: '90d', label: 'Last 90 Days' },
 ];
 
-const chartColors = ['rgb(59, 130, 246)', 'rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(239, 68, 68)', 'rgb(139, 92, 246)'];
+const chartColors = ['rgb(99, 102, 241)', 'rgb(52, 211, 153)', 'rgb(251, 191, 36)', 'rgb(248, 113, 113)', 'rgb(167, 139, 250)'];
 
 export default function AnalyticsPage() {
   const [period, setPeriod] = useState('30d');
@@ -67,8 +67,8 @@ export default function AnalyticsPage() {
       {
         label: trend?.metric ?? 'Cost',
         data: trendPoints.map((d) => d.value),
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderColor: 'rgb(99, 102, 241)',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
         fill: true,
         tension: 0.3,
       },

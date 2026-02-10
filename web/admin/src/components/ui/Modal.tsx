@@ -17,12 +17,12 @@ const maxWidthClasses = {
 export default function Modal({ onClose, labelledBy, maxWidth = 'md', className = '', children }: ModalProps) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-center justify-center p-4"
       onClick={onClose}
       aria-label="Close modal"
     >
       <div
-        className={`bg-gray-900 border border-gray-700 rounded-lg shadow-xl ${maxWidthClasses[maxWidth]} w-full ${className}`}
+        className={`bg-gray-900 border border-gray-700/40 rounded-xl shadow-2xl shadow-black/40 ${maxWidthClasses[maxWidth]} w-full ${className}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

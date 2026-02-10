@@ -6,8 +6,8 @@ body {
 
 /* Smooth dark scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -15,9 +15,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-800 rounded;
+  @apply bg-gray-800 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-700;
+}
+
+/* Global focus-visible ring */
+*:focus-visible {
+  @apply outline-none ring-2 ring-indigo-500/70 ring-offset-2 ring-offset-gray-950;
 }

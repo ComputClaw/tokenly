@@ -9,7 +9,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAuth();
 
   return (
-    <header className="h-16 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 flex items-center justify-between px-4 lg:px-6">
+    <header className="h-16 bg-gray-900/70 backdrop-blur-md border-b border-gray-800/50 flex items-center justify-between px-4 lg:px-6">
       <button
         onClick={onMenuClick}
         className="lg:hidden p-2 rounded-md text-gray-400 hover:bg-gray-800"

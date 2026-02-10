@@ -86,7 +86,7 @@ export default function ClientsPage() {
             <button
               key={tab.key}
               onClick={() => setFilter(tab.key)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filter === tab.key ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${filter === tab.key ? 'bg-indigo-500/15 text-white' : 'text-gray-400 hover:text-white'}`}
             >
               {tab.label}
               {tab.count !== undefined && (
@@ -114,13 +114,13 @@ export default function ClientsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-800/50 border-b border-gray-800">
+              <thead className="bg-gray-800/30 border-b border-gray-700/40">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Hostname</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Last Seen</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Worker</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-500">Uploads</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Hostname</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Last Seen</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 text-xs uppercase tracking-wider">Worker</th>
+                  <th className="px-4 py-3 text-right font-medium text-gray-500 text-xs uppercase tracking-wider">Uploads</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
@@ -128,7 +128,7 @@ export default function ClientsPage() {
                   <tr
                     key={client.client_id}
                     onClick={() => setSelectedClient(client)}
-                    className="hover:bg-gray-800/50 cursor-pointer"
+                    className="hover:bg-indigo-500/5 cursor-pointer transition-colors duration-150"
                   >
                     <td className="px-4 py-3 font-medium text-gray-100">{client.hostname}</td>
                     <td className="px-4 py-3"><StatusBadge status={client.status} /></td>

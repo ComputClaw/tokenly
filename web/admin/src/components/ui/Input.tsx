@@ -1,6 +1,6 @@
 import { type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 
-const baseClasses = 'bg-gray-800 border border-gray-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 placeholder-gray-500';
+const baseClasses = 'bg-gray-800 border border-gray-700/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500/50 text-gray-100 placeholder-gray-500 transition-all duration-200';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   compact?: boolean;

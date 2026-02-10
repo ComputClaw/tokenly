@@ -38,10 +38,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-950">
+    <div className="flex items-center justify-center min-h-screen bg-gray-950 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-950/20 via-gray-950 to-gray-950">
       <div className="w-full max-w-sm">
-        <div className="bg-gray-900 rounded-lg border border-gray-800 p-8">
-          <h1 className="text-2xl font-bold text-gray-100 text-center mb-6">Tokenly Admin</h1>
+        <div className="bg-gray-900/80 rounded-xl border border-gray-700/40 shadow-2xl shadow-indigo-500/10 p-8">
+          <h1 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Tokenly Admin</h1>
           {error && (
             <div className="mb-4 p-3 rounded-md bg-red-500/10 text-red-400 text-sm">{error}</div>
           )}
