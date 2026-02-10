@@ -21,7 +21,7 @@ Without tracking, you discover expensive usage patterns too late.
 Tokenly automatically discovers and collects token usage data from JSONL log files across your systems, giving you:
 
 - **Unified Dashboard** - All AI spending in one place
-- **Cost Trending** - Daily, weekly, monthly burn rates  
+- **Cost Trending** - Daily, weekly, monthly burn rates
 - **Service Breakdown** - Which models and providers cost the most
 - **Platform Analysis** - Which applications are driving costs
 - **Budget Monitoring** - Alerts when spending exceeds thresholds
@@ -47,48 +47,57 @@ Tokenly automatically discovers and collects token usage data from JSONL log fil
                   └─────────────────┘
 ```
 
+### Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Azure Functions v4, TypeScript, Node.js 22 |
+| **Frontend** | React 19, Vite 7, Tailwind CSS 4, Chart.js |
+| **Client** | Go 1.24+, cross-platform binaries |
+| **Hosting** | Azure Static Web Apps (CDN + managed API) |
+| **Storage** | In-memory (dev) / Azure Table Storage (prod) |
+| **Auth** | JWT with httpOnly refresh cookies, bcrypt |
+
 ### Client Components
 
 **Launcher** (Small, stable service)
-- Manages worker lifecycle
+- Manages worker lifecycle via state-file IPC
 - Handles heartbeats and server communication
-- Downloads and installs worker updates
-- Registers as system service (systemd/Windows Service)
+- Exponential backoff on connection failures
+- Cross-platform: Windows, macOS, Linux (x64 + arm64)
 
 **Worker** (The detective engine)
-- Smart discovery of JSONL files containing token usage
-- Processes files older than 24 hours
-- Uploads data and cleans up local files
-- Learns from successful discoveries
+- Smart discovery of JSONL files using glob patterns
+- Validates files (50%+ valid records threshold)
+- Concurrent uploads with configurable parallelism
+- Learning engine tracks directory success rates
 
 ### Server Components
 
-**Core API**
-- `/heartbeat` - Client registration and approval
-- `/ingest` - Token usage data collection
-- `/auth/*` - Admin authentication (login, refresh, logout)
-- `/admin/*` - Client management, user management, system status
+**Core API** - 12 Azure Functions endpoints
+- `/api/heartbeat` - Client registration and approval
+- `/api/ingest` - Token usage data collection (JSON + multipart)
+- `/api/auth/*` - Authentication (login, refresh, logout)
+- `/api/manage/*` - Client management, users, config, audit, analytics
 
-**Shared Library**
-- Service interfaces (client management, admin operations, JWT tokens, etc.)
-- Domain models, DTOs, and exceptions
-- Plugin interfaces (Admin Storage, Token Storage)
+**Storage Plugins** (dependency-injected, swappable)
+- **Admin Storage** - Client registry, users, config, audit logs
+  - In-memory backend (development)
+  - Azure Table Storage backend (production)
+- **Token Storage** - Usage records, analytics, time-series
+  - In-memory backend with deduplication and trend analysis
 
-**Storage Plugins**
-- **Admin Storage Plugin** - Client registry, system config, audit logs
-- **Token Storage Plugin** - High-volume usage data, analytics, time-series
-- Multiple backends: In-memory (development), database, cloud storage
-
-**Admin Interface**
-- Approve new clients
-- Monitor collection status
-- View usage analytics
+**Admin Interface** - React SPA with 7 pages
+- Dashboard with metric cards and usage trend charts
+- Client management with approve/reject workflow
+- Analytics with cost trends, top services/models, breakdowns
+- Configuration, user management, and audit trail
 
 ## Client Workflow
 
 1. **Registration** - Client sends heartbeat, waits for server approval
 2. **Discovery** - Smart scanning of common log locations:
-   - Linux: `/var/log/*`, `/opt/*/logs/`, `/home/*/logs/` 
+   - Linux: `/var/log/*`, `/opt/*/logs/`, `/home/*/logs/`
    - Windows: `%APPDATA%/logs/`, `%PROGRAMDATA%/logs/`
 3. **Collection** - Upload JSONL files older than 24 hours
 4. **Cleanup** - Delete uploaded files, remove empty directories
@@ -107,65 +116,117 @@ Expected JSONL format for token usage logs:
 
 ### Zero Configuration
 - Clients require no manual setup
-- Server-side approval workflow
+- All configuration delivered via server heartbeat responses
 - Automatic discovery of log locations
-- Self-updating client binaries
+- Server-side approval workflow
 
 ### Secure & Controlled
+- JWT authentication with httpOnly refresh cookies
+- bcrypt password hashing, permission-based access control
 - Clients must be approved before collecting data
-- Hostname-based client identification
-- Server can enable/disable collection per client
-- Configurable collection parameters
+- Full audit trail of all admin actions
 
 ### Smart Discovery
 - Platform-aware log location scanning
-- Learning algorithm remembers successful paths
+- Learning algorithm remembers successful paths with weighted scoring
 - Heuristic expansion (if logs found in `/var/log/app1/`, check `/var/log/app2/`)
 - Efficient scanning with adaptive intervals
 
-### Reliable Updates
-- Launcher/worker pattern prevents update failures
-- Checksum verification for security
-- Seamless binary replacement without service interruption
-- Version management with rollback capability
+### Reliable Architecture
+- Launcher/worker two-process model prevents update failures
+- Branded types prevent ID mix-ups at compile time
+- Discriminated union Result types for error handling
+- Plugin architecture enables swappable storage backends
 
-## Development Roadmap
+## Project Status
 
-### Phase 1: Core Collection
-- [x] Server API framework
-- [x] Basic client worker (discovery + upload)
-- [x] Simple approval system
-- [x] Storage plugin system (in-memory)
+### Phase 1: Server + Admin Interface - COMPLETE
+- [x] Server Core API (12 endpoints, TypeScript/Azure Functions)
+- [x] Admin Storage Plugin (in-memory + Azure Table Storage)
+- [x] Token Storage Plugin (in-memory with analytics)
+- [x] Admin Interface (React SPA, 7 pages, dark theme)
+- [x] JWT authentication with refresh tokens
+- [x] Audit logging and permission system
 
-### Phase 2: Production Ready
-- [ ] Client launcher + auto-updates
-- [ ] Admin web interface
-- [ ] Persistent storage plugins (database, cloud)
+### Phase 2: Client + Production Storage - IN PROGRESS
+- [x] Go client MVP (launcher + worker, cross-platform)
+- [x] JSONL discovery, validation, and upload pipeline
+- [x] Learning engine for optimized scanning
+- [ ] Persistent token storage (PostgreSQL / InfluxDB)
+- [ ] System service installation (systemd / Windows Service)
+- [ ] Client auto-update mechanism
 
-### Phase 3: Analytics
-- [ ] Usage dashboard
-- [ ] Cost trending and alerts
-- [ ] Advanced analytics and insights
+### Phase 3: Advanced Features - PLANNED
+- [ ] Budget alerts and threshold notifications
+- [ ] Advanced analytics and cost projections
+- [ ] Multi-tenant support
+
+## Project Structure
+
+```
+Tokenly/
+├── api/                    → Azure Functions backend (TypeScript)
+│   └── src/
+│       ├── functions/      → 12 HTTP trigger handlers
+│       ├── services/       → Business logic (admin, client, JWT)
+│       ├── interfaces/     → Plugin contracts
+│       ├── plugins/        → InMemory + AzureTable storage
+│       └── models/         → Domain models, DTOs, branded types
+├── web/admin/              → React SPA frontend
+│   └── src/
+│       ├── pages/          → 7 pages (dashboard, clients, analytics, ...)
+│       ├── components/     → Reusable UI (Button, Card, Modal, ...)
+│       ├── contexts/       → Auth state management
+│       └── services/       → API client with auto-refresh
+├── client/go/              → Go client (launcher + worker)
+│   ├── cmd/                → Entry points (launcher, worker)
+│   └── internal/           → Config, platform, scanner, uploader, learner
+├── specs/                  → 8 component specifications (language-agnostic)
+└── swa-cli.config.json     → Local development config
+```
 
 ## Getting Started
 
-1. **Deploy the server** - Set up the Tokenly server core on your hosting platform of choice
-2. **Deploy clients** - Install client launchers on your target machines with `--server <url>`
-3. **Approve clients** - Use the admin interface to approve registered clients
+### Local Development
 
-See the [`specs/`](specs/) folder for detailed component specifications and API contracts.
+```bash
+# Install dependencies
+cd api && npm install
+cd web/admin && npm install
 
-## Use Cases
+# Start the full stack (SWA CLI)
+npx swa start    # Frontend on :4280, API on :7071
 
-- **Personal AI Spending** - Track costs across all your AI experiments and projects
-- **Agent Fleets** - Monitor token usage from multiple AI agents  
-- **Development Teams** - Understand which features drive AI costs
-- **Budget Management** - Set spending limits and get alerts
-- **Usage Optimization** - Identify expensive patterns and optimize
+# Build the Go client
+cd client/go && make build
+```
+
+### Deploy a Client
+
+```bash
+./tokenly-launcher --server https://your-server.com
+```
+
+The launcher registers with the server, waits for admin approval, then automatically starts the worker to discover and upload token usage data.
+
+### Approve Clients
+
+Use the admin interface to review and approve pending clients. All client configuration is managed server-side and delivered via heartbeat responses.
 
 ## Specifications
 
-Detailed architecture specifications for each component are in the [`specs/`](specs/) folder.
+| Spec | Component |
+|------|-----------|
+| [`01-client-launcher-spec.md`](specs/01-client-launcher-spec.md) | Client Launcher - system service managing worker lifecycle |
+| [`02-client-worker-spec.md`](specs/02-client-worker-spec.md) | Client Worker - JSONL discovery, upload, and learning engine |
+| [`03-server-core-spec.md`](specs/03-server-core-spec.md) | Server Core - HTTP API, auth, client management, ingestion |
+| [`04-admin-storage-plugin-spec.md`](specs/04-admin-storage-plugin-spec.md) | Admin Storage Plugin - client registry, config, users, audit |
+| [`05-token-storage-plugin-spec.md`](specs/05-token-storage-plugin-spec.md) | Token Storage Plugin - usage data and analytics |
+| [`06-admin-interface-spec.md`](specs/06-admin-interface-spec.md) | Admin Interface - React SPA for management and analytics |
+| [`07-client-protocol-spec.md`](specs/07-client-protocol-spec.md) | Client Protocol - language-agnostic interoperability contracts |
+| [`08-ingestion-post-processor-spec.md`](specs/08-ingestion-post-processor-spec.md) | Ingestion Post-Processor - async JSONL parsing and validation |
+
+All specifications are implementation-agnostic, using JSON data models, operation tables, and behavioral descriptions.
 
 ---
 
