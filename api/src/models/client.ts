@@ -27,6 +27,7 @@ export interface ClientStats {
 export interface ClientInfo {
   readonly client_id: ClientId;
   readonly hostname: string;
+  description: string;
   status: ClientStatus;
   readonly created_at: string;
   updated_at: string;

@@ -1,6 +1,7 @@
 import { app, HttpRequest, HttpResponse, InvocationContext } from '@azure/functions';
 import { ensureInitialized } from './_init.js';
 import { errorResponse, jsonResponse, handleError, handleOptions, authenticateRequest, requirePermission, getClientIp, parseJsonBody } from './_helpers.js';
+import type { ClientConfig } from '../models/index.js';
 
 interface SetConfigBody {
   value?: unknown;
@@ -49,6 +50,12 @@ async function getConfigHandler(request: HttpRequest, _context: InvocationContex
       return errorResponse(400, 'validation_failed', 'key parameter required');
     }
 
+    // Special key: default client config is stored separately
+    if (key === 'default_client_config') {
+      const clientConfig = await services.adminStorage.getDefaultClientConfig();
+      return jsonResponse(200, { key, value: clientConfig, type: 'json', created_at: '', updated_at: '', updated_by: '', notes: '' });
+    }
+
     const config = await services.adminService.getConfig(key);
     if (!config) {
       return errorResponse(404, 'not_found', `Config key not found: ${key}`);
@@ -81,6 +88,12 @@ async function setConfigHandler(request: HttpRequest, _context: InvocationContex
     const body = await parseJsonBody<SetConfigBody>(request);
     if (!body || body.value === undefined) {
       return errorResponse(400, 'validation_failed', 'value is required');
+    }
+
+    // Special key: default client config is stored separately
+    if (key === 'default_client_config') {
+      await services.adminStorage.setDefaultClientConfig(body.value as ClientConfig, user.username);
+      return jsonResponse(200, { key, value: body.value });
     }
 
     await services.adminService.setConfig(key, body.value, user.username, getClientIp(request));

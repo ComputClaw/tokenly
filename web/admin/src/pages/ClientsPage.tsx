@@ -76,7 +76,12 @@ export default function ClientsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-100">Clients</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-100">Clients</h1>
+        <Button variant="secondary" onClick={loadClients} disabled={loading}>
+          Refresh
+        </Button>
+      </div>
 
       {error && <div className="bg-red-500/10 text-red-400 p-3 rounded-md text-sm">{error}</div>}
 
@@ -150,6 +155,7 @@ export default function ClientsPage() {
           onApprove={handleApprove}
           onReject={handleReject}
           onDelete={handleDelete}
+          onUpdated={loadClients}
         />
       )}
     </div>
@@ -162,15 +168,28 @@ function ClientDetailModal({
   onApprove,
   onReject,
   onDelete,
+  onUpdated,
 }: {
   client: Client;
   onClose: () => void;
   onApprove: (id: string, notes?: string) => void;
   onReject: (id: string) => void;
   onDelete: (id: string) => void;
+  onUpdated: () => void;
 }) {
   const [notes, setNotes] = useState('');
+  const [description, setDescription] = useState(client.description || '');
+  const [savingDesc, setSavingDesc] = useState(false);
   const modalTitleId = `client-detail-title-${client.client_id}`;
+
+  async function handleSaveDescription() {
+    setSavingDesc(true);
+    try {
+      await api.updateClient(client.client_id, { description });
+      onUpdated();
+    } catch { /* ignore */ }
+    finally { setSavingDesc(false); }
+  }
 
   return (
     <Modal onClose={onClose} labelledBy={modalTitleId} maxWidth="lg" className="max-h-[90vh] overflow-y-auto">
@@ -191,6 +210,24 @@ function ClientDetailModal({
                 by {client.approved_by}
               </span>
             )}
+          </div>
+
+          <div>
+            <label htmlFor="client-description" className="block text-sm font-medium text-gray-500 mb-1">Description</label>
+            <div className="flex gap-2">
+              <Input
+                id="client-description"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Add a description..."
+                compact
+                className="flex-1"
+              />
+              <Button variant="secondary" onClick={handleSaveDescription} disabled={savingDesc || description === (client.description || '')}>
+                {savingDesc ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
           </div>
 
           <div>

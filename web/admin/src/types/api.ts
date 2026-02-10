@@ -19,22 +19,33 @@ export interface RefreshResponse {
 export interface Client {
   client_id: string;
   hostname: string;
+  description: string;
   status: 'approved' | 'pending' | 'rejected';
-  last_seen: string;
-  launcher_version: string;
-  worker_version: string;
-  worker_status: string;
+  last_seen: string | null;
+  launcher_version: string | null;
+  worker_version: string | null;
+  worker_status: string | null;
   system_info: {
-    os: string;
-    platform: string;
-  };
+    os?: string;
+    arch?: string;
+    platform?: string;
+  } | null;
   stats: {
     total_uploads: number;
     total_records: number;
-    last_upload: string;
+    last_upload: string | null;
+    files_uploaded_today?: number;
+    last_scan_time?: string | null;
+    directories_monitored?: number;
+    errors_today?: number;
+    consecutive_failures?: number;
   };
-  approved_at?: string | undefined;
-  approved_by?: string | undefined;
+  created_at?: string;
+  updated_at?: string;
+  approved_at?: string | null;
+  approved_by?: string | null;
+  approval_notes?: string | null;
+  custom_config?: Record<string, unknown>;
 }
 
 export interface ClientListResponse {
