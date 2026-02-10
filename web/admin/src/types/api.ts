@@ -19,6 +19,7 @@ export interface RefreshResponse {
 export interface Client {
   client_id: string;
   hostname: string;
+  description: string;
   status: 'approved' | 'pending' | 'rejected';
   last_seen: string | null;
   launcher_version: string | null;

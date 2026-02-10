@@ -122,6 +122,46 @@ async function rejectClientHandler(request: HttpRequest, _context: InvocationCon
   }
 }
 
+async function updateClientHandler(request: HttpRequest, _context: InvocationContext): Promise<HttpResponse> {
+  if (request.method === 'OPTIONS') return handleOptions();
+
+  try {
+    const user = await authenticateRequest(request);
+    if (!user) {
+      return errorResponse(401, 'unauthorized', 'Valid JWT token required');
+    }
+    if (!requirePermission(user, 'client:configure')) {
+      return errorResponse(403, 'forbidden', 'Missing permission: client:configure');
+    }
+
+    const services = await ensureInitialized();
+    const clientId = request.params.clientId;
+    if (!clientId) {
+      return errorResponse(400, 'validation_failed', 'clientId parameter required');
+    }
+
+    const client = await services.adminService.getClient(clientId);
+    if (!client) {
+      return errorResponse(404, 'not_found', 'Client not found');
+    }
+
+    const body = await parseJsonBody<{ description?: string }>(request);
+    if (!body) {
+      return errorResponse(400, 'validation_failed', 'Request body required');
+    }
+
+    const updates: Record<string, unknown> = {};
+    if (body.description !== undefined) updates.description = body.description;
+
+    await services.adminStorage.updateClient(clientId, updates);
+
+    const updated = await services.adminService.getClient(clientId);
+    return jsonResponse(200, updated);
+  } catch (err) {
+    return handleError(err);
+  }
+}
+
 async function deleteClientHandler(request: HttpRequest, _context: InvocationContext): Promise<HttpResponse> {
   if (request.method === 'OPTIONS') return handleOptions();
 
@@ -178,9 +218,13 @@ app.http('mgmtClientReject', {
   handler: rejectClientHandler,
 });
 
-app.http('mgmtClientDelete', {
-  methods: ['DELETE', 'OPTIONS'],
+app.http('mgmtClientUpdate', {
+  methods: ['PUT', 'DELETE', 'OPTIONS'],
   route: 'manage/clients/{clientId}',
   authLevel: 'anonymous',
-  handler: deleteClientHandler,
+  handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponse> => {
+    if (request.method === 'PUT') return updateClientHandler(request, context);
+    if (request.method === 'DELETE') return deleteClientHandler(request, context);
+    return handleOptions();
+  },
 });

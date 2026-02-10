@@ -276,6 +276,7 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
     const client: ClientInfo = {
       client_id: clientId,
       hostname: registration.hostname,
+      description: '',
       status: 'pending',
       created_at: now,
       updated_at: now,
@@ -321,6 +322,7 @@ export class InMemoryAdminStorage implements IAdminStoragePlugin {
       throw new NotFoundError('Client', clientId);
     }
 
+    if (updates.description !== undefined) client.description = updates.description;
     if (updates.last_seen !== undefined) client.last_seen = updates.last_seen;
     if (updates.launcher_version !== undefined) client.launcher_version = updates.launcher_version;
     if (updates.worker_version !== undefined) client.worker_version = updates.worker_version;

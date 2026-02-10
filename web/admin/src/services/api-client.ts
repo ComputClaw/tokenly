@@ -115,6 +115,10 @@ export async function rejectClient(clientId: string): Promise<void> {
   await api.put(`/manage/clients/${clientId}/reject`, { approved: false });
 }
 
+export async function updateClient(clientId: string, updates: { description?: string }): Promise<void> {
+  await api.put(`/manage/clients/${clientId}`, updates);
+}
+
 export async function deleteClient(clientId: string): Promise<void> {
   await api.delete(`/manage/clients/${clientId}`);
 }

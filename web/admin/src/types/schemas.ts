@@ -8,6 +8,7 @@ export const AuthUserSchema = z.object({
 export const ClientSchema = z.object({
   client_id: z.string(),
   hostname: z.string(),
+  description: z.string().optional().default(''),
   status: z.enum(['approved', 'pending', 'rejected']),
   last_seen: z.string().nullable(),
   launcher_version: z.string().nullable(),
